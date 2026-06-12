@@ -153,7 +153,7 @@ static const ObsMeta OBS[N_OBS] = {
 
 int main()
 {
-    constexpr std::size_t N_REF = 1000'000;
+    constexpr std::size_t N_REF = 50'000;
 
     // -- Banner --------------------------------------------------------------
     std::printf(
