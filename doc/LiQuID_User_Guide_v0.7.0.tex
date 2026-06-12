@@ -1,0 +1,3609 @@
+% ============================================================
+%  LiQuID User Guide Manual
+%  Lindblad Quantum Integrated Dynamics — v0.7.0
+%  Production-grade enterprise documentation
+% ============================================================
+\documentclass[11pt,a4paper,twoside]{book}
+
+% -- Encoding & fonts -----------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% -- Page geometry --------------------------------------------
+\usepackage[
+  a4paper,
+  top=25mm, bottom=30mm,
+  inner=30mm, outer=25mm,
+  headsep=8mm, footskip=12mm,
+  marginparwidth=18mm
+]{geometry}
+
+% -- Colours --------------------------------------------------
+\usepackage[dvipsnames,svgnames,x11names]{xcolor}
+\definecolor{LiquidBlue}   {HTML}{1A3A5C}
+\definecolor{LiquidTeal}   {HTML}{0A7B87}
+\definecolor{LiquidGold}   {HTML}{C8922A}
+\definecolor{LiquidRed}    {HTML}{B93A2B}
+\definecolor{LiquidGreen}  {HTML}{276B3D}
+\definecolor{LiquidGray}   {HTML}{4A4A4A}
+\definecolor{LiquidLtGray} {HTML}{F4F5F7}
+\definecolor{LiquidMid}    {HTML}{D0D5DE}
+\definecolor{CodeBg}       {HTML}{F7F8FA}
+\definecolor{CodeFrame}    {HTML}{CBD0DA}
+\definecolor{NoteBlue}     {HTML}{E8F3FB}
+\definecolor{NoteBlueBorder}{HTML}{2F7EBD}
+\definecolor{WarnYellow}   {HTML}{FFF8E1}
+\definecolor{WarnBorder}   {HTML}{D4860A}
+\definecolor{PerfGreen}    {HTML}{EBF8EF}
+\definecolor{PerfBorder}   {HTML}{2E8B57}
+\definecolor{DangerRed}    {HTML}{FDECEA}
+\definecolor{DangerBorder} {HTML}{B93A2B}
+
+% -- Mathematics ----------------------------------------------
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{physics}   % \ket, \bra, \braket, \norm etc.
+
+% -- Source code (minted) -------------------------------------
+\usepackage[
+  chapter,
+  newfloat
+]{minted}
+\setminted{
+  style        = tango,
+  bgcolor      = CodeBg,
+  fontsize     = \small,
+  breaklines   = true,
+  breakanywhere= false,
+  autogobble   = true,
+  tabsize      = 4,
+  frame        = leftline,
+  framesep     = 6pt,
+  rulecolor    = CodeFrame,
+  numbersep    = 8pt,
+  xleftmargin  = 12pt,
+}
+\setminted[cpp]{
+  style        = tango,
+  bgcolor      = CodeBg,
+}
+\setminted[bash]{
+  style        = tango,
+  bgcolor      = CodeBg,
+  fontsize     = \small,
+}
+\setminted[cmake]{
+  style        = friendly,
+  bgcolor      = CodeBg,
+}
+\setminted[python]{
+  style        = friendly,
+  bgcolor      = CodeBg,
+}
+
+% -- Callout boxes (tcolorbox) ---------------------------------
+\usepackage[skins,breakable,listings]{tcolorbox}
+
+%  NOTE
+\newtcolorbox{notebox}[1][]{
+  enhanced, breakable,
+  colback   = NoteBlue,
+  colframe  = NoteBlueBorder,
+  coltext   = LiquidGray,
+  arc       = 2pt,
+  boxrule   = 1.5pt,
+  left      = 8pt, right = 8pt, top = 6pt, bottom = 6pt,
+  fonttitle = \bfseries\small\color{NoteBlueBorder},
+  title     = {\faInfoCircle\quad NOTE},
+  #1
+}
+
+%  WARNING
+\newtcolorbox{warnbox}[1][]{
+  enhanced, breakable,
+  colback   = WarnYellow,
+  colframe  = WarnBorder,
+  coltext   = LiquidGray,
+  arc       = 2pt,
+  boxrule   = 1.5pt,
+  left      = 8pt, right = 8pt, top = 6pt, bottom = 6pt,
+  fonttitle = \bfseries\small\color{WarnBorder},
+  title     = {\faExclamationTriangle\quad WARNING},
+  #1
+}
+
+%  PERFORMANCE TIP
+\newtcolorbox{perfbox}[1][]{
+  enhanced, breakable,
+  colback   = PerfGreen,
+  colframe  = PerfBorder,
+  coltext   = LiquidGray,
+  arc       = 2pt,
+  boxrule   = 1.5pt,
+  left      = 8pt, right = 8pt, top = 6pt, bottom = 6pt,
+  fonttitle = \bfseries\small\color{PerfBorder},
+  title     = {\faBolt\quad PERFORMANCE TIP},
+  #1
+}
+
+%  INVARIANT
+\newtcolorbox{invbox}[1][]{
+  enhanced, breakable,
+  colback   = DangerRed,
+  colframe  = DangerBorder,
+  coltext   = LiquidGray,
+  arc       = 2pt,
+  boxrule   = 1.5pt,
+  left      = 8pt, right = 8pt, top = 6pt, bottom = 6pt,
+  fonttitle = \bfseries\small\color{DangerBorder},
+  title     = {\faLock\quad INVARIANT},
+  #1
+}
+
+% Icons (text fallbacks since fontawesome5 may not be installed)
+% We redefine these as text macros for portability
+\newcommand{\faInfoCircle}{[\textbf{i}]}
+\newcommand{\faExclamationTriangle}{[!]}
+\newcommand{\faBolt}{[\textbf{P}]}
+\newcommand{\faLock}{[\textbf{INV}]}
+
+% -- Section styling -------------------------------------------
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{LiquidBlue}}
+  {\normalfont\Large\color{LiquidTeal}\chaptername\ \thechapter}
+  {10pt}
+  {\Huge\bfseries\color{LiquidBlue}}
+  [\vspace{2pt}{\color{LiquidGold}\rule{\linewidth}{2pt}}]
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{LiquidBlue}}
+  {\thesection}{1em}{}
+  [\vspace{1pt}{\color{LiquidMid}\rule{\linewidth}{0.4pt}}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{LiquidGray}}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\itshape\color{LiquidGray}}
+  {\thesubsubsection}{1em}{}
+
+% -- Header / Footer -------------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\color{LiquidGray}\textit{\leftmark}}
+\fancyhead[RO]{\small\color{LiquidGray}\textit{\rightmark}}
+\fancyhead[RE,LO]{\small\color{LiquidTeal}\textbf{LiQuID v0.7.0}}
+\fancyfoot[C]{\small\color{LiquidGray}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{LiquidMid}\leaders\hrule\hfil}}
+
+% -- Tables ---------------------------------------------------
+\usepackage{booktabs,array,tabularx,longtable}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% -- Lists ----------------------------------------------------
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.5em,itemsep=2pt}
+\setlist[enumerate]{leftmargin=1.5em,itemsep=2pt}
+
+% -- Figures --------------------------------------------------
+\usepackage{graphicx,caption,subcaption}
+\usepackage{tikz,pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,backgrounds,
+                calc,decorations.pathmorphing,matrix,chains}
+
+% -- Cross-references & hyperlinks -----------------------------
+\usepackage[
+  colorlinks = true,
+  linkcolor  = LiquidBlue,
+  citecolor  = LiquidTeal,
+  urlcolor   = LiquidTeal,
+  pdftitle   = {LiQuID User Guide v0.7.0},
+  pdfauthor  = {LiQuID Project},
+  pdfsubject = {Monte Carlo Wave Function simulation in C++17},
+  bookmarksnumbered = true,
+  bookmarksopen     = true
+]{hyperref}
+\usepackage{cleveref}
+
+% -- Bibliography ---------------------------------------------
+\usepackage[numbers,sort&compress]{natbib}
+
+% -- Miscellaneous ---------------------------------------------
+\usepackage{parskip}
+\usepackage{mdframed}
+\usepackage{multicol}
+\usepackage{doi}
+\usepackage{url}
+\usepackage{float}
+
+% -- Custom math operators -------------------------------------
+\DeclareMathOperator{\lqTr}{Tr}
+\DeclareMathOperator{\lqRe}{Re}
+\DeclareMathOperator{\lqIm}{Im}
+\newcommand{\Heff}{H_{\mathrm{eff}}}
+\newcommand{\HeffDef}{H - \frac{i}{2}\sum_k L_k^\dagger L_k}
+\newcommand{\densmat}{\hat{\varrho}}    % density matrix
+\newcommand{\Lindblad}{\mathcal{L}}  % Lindblad superoperator
+\newcommand{\Hilbert}{\mathcal{H}}   % Hilbert space
+\newcommand{\Order}{\mathcal{O}}
+\newcommand{\complex}{\mathbb{C}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\liquid}{\texttt{LiQuID}}
+\newcommand{\code}[1]{\texttt{\small#1}}
+\newcommand{\filename}[1]{\texttt{#1}}
+
+% -- Theorem environments --------------------------------------
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{algorithm}{Algorithm}[chapter]
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[chapter]
+
+% -- Suppress paragraph indent (parskip handles spacing) -------
+\setlength{\parindent}{0pt}
+
+% -------------------------------------------------------------
+%  DOCUMENT
+% -------------------------------------------------------------
+\begin{document}
+
+% -- Title page -----------------------------------------------
+\begin{titlepage}
+\pagecolor{LiquidBlue}
+\color{white}
+\vspace*{20mm}
+\begin{center}
+  {\fontsize{52}{60}\selectfont\bfseries LiQuID}\\[6pt]
+  {\Large\color{LiquidGold} Lindblad Quantum Integrated Dynamics}\\[4mm]
+  {\large Version 0.7.0}\\[20mm]
+  {\color{LiquidMid}\rule{0.7\linewidth}{1pt}}\\[8mm]
+  {\LARGE\bfseries User Guide Manual}\\[6mm]
+  {\large A Comprehensive Reference for Physicists and Quantum Software Engineers}\\[12mm]
+  {\color{LiquidMid}\rule{0.7\linewidth}{1pt}}\\[16mm]
+  {\normalsize
+    Monte Carlo Wave Function Simulation $\cdot$
+    Adaptive ODE Solvers $\cdot$
+    Sparse Operators $\cdot$
+    Parallel Ensemble Management
+  }\\[8mm]
+  {\normalsize C++17 $\cdot$ OpenMP $\cdot$ Header-Only Core}\\[20mm]
+  {\small\color{LiquidMid} Compiled \today}
+\end{center}
+\vfill
+\begin{center}
+  {\small\color{LiquidMid}
+    This document covers the complete public API, mathematical foundations,
+    performance model, and extension seams of LiQuID v0.7.0.
+  }
+\end{center}
+\end{titlepage}
+\nopagecolor
+\color{black}
+
+% -- Front matter ---------------------------------------------
+\frontmatter
+\pagestyle{fancy}
+
+% -------------------------------------------------------------
+%  PREFACE
+% -------------------------------------------------------------
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+\liquid{} (\emph{Lindblad Quantum Integrated Dynamics}) is a C++17 library for
+high-performance simulation of open quantum systems via the
+\emph{Monte Carlo Wave Function} (MCWF) method. It is designed for research
+physicists, quantum optics experimentalists, and quantum software engineers who
+require both mathematical rigour and production-grade performance in a single,
+dependency-free framework.
+
+\medskip
+\textbf{What this manual covers.}
+This guide documents every public class, function, and configuration parameter
+in LiQuID v0.7.0. It is organized in layers that mirror the library's own
+dependency graph: from foundational type aliases and the random number generator,
+through the linear algebra primitives and ODE solvers, to the complete
+simulation pipeline. Each section anchors code examples directly to the
+underlying mathematics and explains the memory management decisions that
+determine performance on modern hardware.
+
+\medskip
+\textbf{What this manual does not cover.}
+Density-matrix (Lindblad master equation) solvers, GPU backends, and
+Python bindings are explicitly out of scope for v0.7.0. MCWF is the
+single computational paradigm of the library; this focus is intentional
+and is discussed in \cref{chap:theory}.
+
+\medskip
+\textbf{How to use this manual.}
+Readers new to the MCWF method should start with \cref{chap:theory} before
+examining the API. Experienced users may proceed directly to \cref{chap:quickstart}.
+The performance chapter (\cref{chap:performance}) should be consulted before
+deploying simulations with $N \geq 100$ or more than $10^4$ trajectories.
+
+% -------------------------------------------------------------
+%  STYLE GUIDE COMPONENT LIBRARY
+% -------------------------------------------------------------
+\chapter*{Documentation Style Guide}
+\addcontentsline{toc}{chapter}{Documentation Style Guide}
+
+This chapter defines the visual language used throughout the manual.
+All code examples, mathematical formulations, and callout blocks follow
+the conventions below without exception.
+
+\section*{C++ Code Blocks}
+
+All C++ listings use \texttt{minted} with the \texttt{tango} style and the
+\texttt{cpp} lexer. Line numbers are shown for blocks exceeding ten lines.
+Identifiers are cross-referenced to their defining headers on first use.
+
+Example of a fully annotated, non-abbreviated code block:
+
+\begin{minted}[linenos]{cpp}
+#include "liquid/liquid.hpp"
+using namespace liquid;
+
+// Build the system: two-level atom, decay rate gamma
+DenseOperator make_sigma_minus(double gamma) {
+    DenseOperator L(2);               // 2x2 zero-initialized
+    L(1, 0) = Scalar{std::sqrt(gamma), 0.0};  // sigma_- = |0><1|
+    return L;
+}
+\end{minted}
+
+Inline code references are typeset as \code{liquid::StateVector} or
+\code{apply\_add()}.
+
+\section*{Mathematical Formulations}
+
+All equations are typeset in display mode with \texttt{amsmath}.
+Quantum states use Dirac notation via the \texttt{physics} package.
+The Lindblad master equation is the central object and is always written as:
+
+\begin{equation}
+  \frac{d\densmat}{dt}
+    = -i\bigl[H, \densmat\bigr]
+      + \sum_k \left(
+          L_k \densmat L_k^\dagger
+          - \frac{1}{2}\bigl\{L_k^\dagger L_k,\, \densmat\bigr\}
+        \right)
+  \label{eq:lindblad-master}
+\end{equation}
+
+The effective non-Hermitian Hamiltonian used by the MCWF algorithm is:
+\begin{equation}
+  \Heff = \HeffDef
+  \label{eq:heff-def}
+\end{equation}
+
+\section*{Callout Block Reference}
+
+\begin{notebox}
+  A \textbf{NOTE} provides supplementary context, historical background,
+  or a clarification of non-obvious behaviour.
+\end{notebox}
+
+\begin{warnbox}
+  A \textbf{WARNING} identifies a precondition that, if violated, produces
+  incorrect results, undefined behaviour, or numerical failure. Always read
+  warnings before using the associated API.
+\end{warnbox}
+
+\begin{perfbox}
+  A \textbf{PERFORMANCE TIP} describes a measurable optimisation strategy
+  derived from the memory layout or computational complexity analysis
+  presented in \cref{chap:performance}.
+\end{perfbox}
+
+\begin{invbox}
+  An \textbf{INVARIANT} is a mathematical or memory constraint that
+  LiQuID guarantees at all times. Violating an invariant from outside
+  the library constitutes undefined behaviour.
+\end{invbox}
+
+% -------------------------------------------------------------
+%  TABLE OF CONTENTS
+% -------------------------------------------------------------
+\tableofcontents
+\listoffigures
+\listoftables
+
+% -------------------------------------------------------------
+%  MAIN MATTER
+% -------------------------------------------------------------
+\mainmatter
+
+% ============================================================
+%  PART I — FOUNDATIONS
+% ============================================================
+\part{Foundations}
+
+% -------------------------------------------------------------
+\chapter{Introduction and Architecture}
+\label{chap:intro}
+% -------------------------------------------------------------
+
+\section{Scope and Identity}
+\label{sec:scope}
+
+\liquid{} is not a general-purpose quantum computing toolkit.
+Its scope is precisely stated:
+
+\begin{quotation}\itshape
+  LiQuID provides production-grade Monte Carlo Wave Function simulation
+  of Markovian open quantum systems described by the Lindblad master
+  equation, with adaptive trajectory management, convergence-based
+  stopping, and an extensible ensemble allocation policy.
+\end{quotation}
+
+The library deliberately excludes density-matrix evolution, non-Markovian
+dynamics, and circuit-model quantum computation. This focus ensures that
+every design decision — from the choice of \code{Scalar = std::complex<double>}
+to the FSAL property of the Dormand--Prince integrator — is motivated by
+a single, well-understood computational task.
+
+\section{Repository Structure}
+\label{sec:repo-structure}
+
+\liquid{} is distributed as a single static library with a header-only core.
+The \emph{only} compiled translation unit is \filename{src/core/rng.cpp},
+which implements the xoshiro256** random number generator.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={rectangle, rounded corners=3pt, draw=LiquidMid,
+              fill=LiquidLtGray, text width=38mm, align=center,
+              minimum height=8mm, inner sep=4pt},
+  layer/.style={rectangle, rounded corners=3pt, draw=LiquidBlue,
+                fill=LiquidBlue!10, text width=120mm, align=left,
+                minimum height=12mm, inner sep=6pt},
+  arr/.style={-{Stealth[length=4pt]}, thick, color=LiquidTeal},
+]
+% Layers
+\node[layer] (l5) at (0, 0)
+  {\textbf{Layer 5 — Simulation Interface}
+   \quad\small\texttt{simulation.hpp}\quad\texttt{parameter\_sweep.hpp}};
+\node[layer, below=5mm of l5] (l4)
+  {\textbf{Layer 4 — Ensemble Management}
+   \quad\small\texttt{ensemble\_manager.hpp}\quad\texttt{adaptive\_allocator.hpp}};
+\node[layer, below=5mm of l4] (l3)
+  {\textbf{Layer 3 — Trajectory}
+   \quad\small\texttt{mcwf\_propagator.hpp}\quad\texttt{trajectory\_state.hpp}};
+\node[layer, below=5mm of l3] (l2)
+  {\textbf{Layer 2 — Quantum System}
+   \quad\small\texttt{open\_system.hpp}\quad\texttt{lindblad.hpp}};
+\node[layer, below=5mm of l2] (l1)
+  {\textbf{Layer 1 — Linear Algebra / ODE}
+   \quad\small\texttt{dense.hpp}\quad\texttt{sparse.hpp}\quad\texttt{rk4.hpp}\quad\texttt{dopri45.hpp}};
+\node[layer, below=5mm of l1] (l0)
+  {\textbf{Layer 0 — Foundation}
+   \quad\small\texttt{types.hpp}\quad\texttt{config.hpp}\quad\texttt{rng.hpp}};
+
+\draw[arr] (l5) -- (l4);
+\draw[arr] (l4) -- (l3);
+\draw[arr] (l3) -- (l2);
+\draw[arr] (l2) -- (l1);
+\draw[arr] (l1) -- (l0);
+\end{tikzpicture}
+\caption{LiQuID dependency graph. Arrows point from dependent to dependency.
+         All dependencies are strictly unidirectional; no circular includes exist.}
+\label{fig:layer-graph}
+\end{figure}
+
+\section{Build System and Requirements}
+\label{sec:build}
+
+\subsection{Prerequisites}
+\label{subsec:prerequisites}
+
+\begin{table}[H]
+\centering
+\caption{Build requirements for LiQuID v0.7.0.}
+\label{tab:requirements}
+\begin{tabularx}{\linewidth}{L{30mm}L{25mm}X}
+\toprule
+\textbf{Component} & \textbf{Version} & \textbf{Notes} \\
+\midrule
+CMake      & $\geq$ 3.16   & Required for \code{target\_compile\_features} \\
+C++ compiler & C++17       & GCC $\geq$ 7, Clang $\geq$ 5, MSVC 2019+ \\
+OpenMP     & Optional       & Enables multi-threaded ensemble dispatch \\
+Python + Pygments & Optional & Required only for \texttt{minted}-rendered docs \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{CMake Configuration}
+\label{subsec:cmake}
+
+\begin{minted}[linenos]{bash}
+git clone https://github.com/your-org/LiQuID.git
+cd LiQuID
+cmake -B build -DCMAKE_BUILD_TYPE=Release \
+               -DLIQUID_OPENMP=ON          \
+               -DLIQUID_TESTS=ON           \
+               -DLIQUID_EXAMPLES=ON
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure
+\end{minted}
+
+CMake exposes four boolean options:
+
+\begin{table}[H]
+\centering
+\caption{CMake build options.}
+\label{tab:cmake-options}
+\begin{tabularx}{\linewidth}{L{42mm}L{18mm}X}
+\toprule
+\textbf{Option} & \textbf{Default} & \textbf{Effect} \\
+\midrule
+\code{LIQUID\_OPENMP}    & \code{ON}  & Links OpenMP if found; falls back silently \\
+\code{LIQUID\_TESTS}     & \code{ON}  & Builds 10 unit + 7 validation test executables \\
+\code{LIQUID\_EXAMPLES}  & \code{ON}  & Builds \code{jc\_steady\_state} and \code{single} \\
+\code{LIQUID\_SANITIZE}  & \code{OFF} & Enables AddressSanitizer + UBSan (Debug only) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Linking Against LiQuID}
+\label{subsec:linking}
+
+\begin{minted}{cmake}
+find_package(LiQuID REQUIRED)
+target_link_libraries(my_simulation PRIVATE liquid)
+\end{minted}
+
+Alternatively, add as a subdirectory:
+
+\begin{minted}{cmake}
+add_subdirectory(extern/LiQuID)
+target_link_libraries(my_simulation PRIVATE liquid)
+\end{minted}
+
+\begin{notebox}
+  The umbrella header \code{liquid/liquid.hpp} includes all public
+  headers in correct dependency order. For large projects, you may
+  include individual layer headers to reduce compilation time.
+\end{notebox}
+
+% -------------------------------------------------------------
+\chapter{Theoretical Foundations}
+\label{chap:theory}
+% -------------------------------------------------------------
+
+\section{The Lindblad Master Equation}
+\label{sec:lindblad-master}
+
+An open quantum system is one that interacts with an unmonitored
+environment (reservoir). When the system--reservoir coupling is weak
+(\emph{Born approximation}) and the reservoir correlation time is much
+shorter than the system dynamics (\emph{Markov approximation}), the
+reduced density matrix $\densmat$ of the system evolves under the
+\emph{Gorini--Kossakowski--Sudarshan--Lindblad} (GKSL) master equation:
+
+\begin{equation}
+  \boxed{
+  \frac{d\densmat}{dt}
+    = -i\bigl[H, \densmat\bigr]
+      + \sum_{k=1}^{K} \left(
+          L_k \densmat L_k^\dagger
+          - \frac{1}{2} L_k^\dagger L_k \densmat
+          - \frac{1}{2} \densmat\, L_k^\dagger L_k
+        \right)
+  }
+  \label{eq:lindblad}
+\end{equation}
+
+where:
+\begin{itemize}
+  \item $H \in \complex^{N \times N}$ is the Hermitian system Hamiltonian
+        (\emph{physical units}: $\hbar = 1$);
+  \item $\{L_k\}_{k=1}^{K}$ are the \emph{Lindblad jump operators}, which
+        encode the dissipative channels of the system--environment interaction;
+  \item $[\cdot,\cdot]$ denotes the commutator.
+\end{itemize}
+
+\cref{eq:lindblad} is the most general Markovian master equation that
+preserves the trace, Hermiticity, and positive semi-definiteness of
+$\densmat$.
+
+\begin{notebox}
+  \liquid{} works in natural units $\hbar = 1$. All energies and rates
+  are expressed in the same units as the Hamiltonian matrix elements.
+  Concretely, if $H_{00}$ has units of MHz, then decay rates $\gamma_k$
+  must also be in MHz, and $t_{\mathrm{final}}$ in $\mu\mathrm{s}^{-1}$.
+\end{notebox}
+
+\subsection{Physical Interpretation of Jump Operators}
+\label{subsec:jump-ops}
+
+Each operator $L_k$ describes one incoherent process. Common examples
+in quantum optics are:
+
+\begin{table}[H]
+\centering
+\caption{Standard Lindblad jump operators for common dissipation channels.}
+\label{tab:jump-ops}
+\begin{tabularx}{\linewidth}{L{38mm}L{38mm}X}
+\toprule
+\textbf{Process} & \textbf{Operator} & \textbf{C++ construction} \\
+\midrule
+Spontaneous emission (rate $\gamma$)
+  & $L = \sqrt{\gamma}\,\sigma_-$
+  & \code{L(1,0) = Scalar\{sqrt(gamma), 0\};} \\[4pt]
+Cavity photon loss (rate $\kappa$)
+  & $L = \sqrt{\kappa}\,a$
+  & Lower-triangular with $\sqrt{n}$ entries \\[4pt]
+Pure dephasing (rate $\gamma_\phi$)
+  & $L = \sqrt{\gamma_\phi}\,\sigma_z$
+  & Diagonal: $\pm\sqrt{\gamma_\phi}$ \\[4pt]
+Thermal excitation (rate $\gamma\bar{n}$)
+  & $L = \sqrt{\gamma\bar{n}}\,\sigma_+$
+  & \code{L(0,1) = Scalar\{sqrt(gamma\_n), 0\};} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{The MCWF Stochastic Unravelling}
+\label{sec:mcwf-theory}
+
+\subsection{Core Idea}
+\label{subsec:mcwf-core}
+
+The MCWF method (Dalibard, Castin and M{\o}lmer, 1992; Dum, Zoller and Ritsch,
+1992) \emph{unravels} the master equation into an ensemble of pure-state
+trajectories. Each trajectory is a stochastic process on the Hilbert space
+$\Hilbert = \complex^N$, and ensemble averages reproduce the density matrix:
+
+\begin{equation}
+  \densmat(t) = \overline{\ket{\psi(t)}\bra{\psi(t)}}
+  \label{eq:mcwf-avg}
+\end{equation}
+
+where the overline denotes an average over many independent realizations
+of the stochastic process. The computational advantage over direct
+master-equation integration is memory: storing $\ket{\psi} \in \complex^N$
+requires $\Order(N)$ complex numbers, whereas $\densmat$ requires
+$\Order(N^2)$. For a 100-photon Fock space ($N = 101$), this is the
+difference between $\sim 1.6\,\mathrm{kB}$ and $\sim 160\,\mathrm{kB}$.
+For $N = 1000$, the ratio grows to $\times 1000$.
+
+\subsection{The Effective Non-Hermitian Hamiltonian}
+\label{subsec:heff}
+
+Define the aggregate decay operator:
+\begin{equation}
+  \Gamma \equiv \sum_{k=1}^{K} L_k^\dagger L_k
+  \label{eq:Gamma-def}
+\end{equation}
+
+and the effective Hamiltonian:
+\begin{equation}
+  \Heff \equiv H - \frac{i}{2}\,\Gamma = \HeffDef
+  \label{eq:heff}
+\end{equation}
+
+$\Heff$ is \emph{not Hermitian}: $\Heff \neq \Heff^\dagger$.
+Its non-Hermitian part $-\tfrac{i}{2}\Gamma$ causes the norm of
+$\ket{\psi}$ to decrease over time, encoding the probability of
+\emph{no jump having occurred} up to time $t$.
+
+\begin{invbox}
+  \textbf{INV-$\Gamma$:} In LiQuID, $\Gamma = \sum_k L_k^\dagger L_k$ is
+  precomputed and stored immutably in \code{LindbladSet::gamma\_} at
+  construction time. It is never recomputed. Modifying the jump operators
+  after construction is not possible because \code{LindbladSet::ops\_}
+  is private and the copy constructor is deleted.
+\end{invbox}
+
+\subsection{Between-Jump Evolution}
+\label{subsec:between-jump}
+
+Between quantum jumps, the wavefunction satisfies the
+\emph{non-Hermitian Schr{\"o}dinger equation}:
+
+\begin{equation}
+  \frac{d\ket{\psi}}{dt} = -i\,\Heff\ket{\psi}
+  \label{eq:nhse}
+\end{equation}
+
+This is integrated numerically by the ODE solver.
+The norm $\|\ket{\psi(t)}\|^2 = \braket{\psi(t)|\psi(t)}$ decreases
+monotonically between jumps. Specifically, at time $t$ after the last
+normalization event:
+
+\begin{equation}
+  \frac{d}{dt}\|\ket{\psi}\|^2
+    = -\braket{\psi|\Gamma|\psi}
+    = -\sum_k \|L_k\ket{\psi}\|^2 \leq 0
+  \label{eq:norm-decay}
+\end{equation}
+
+\subsection{Jump Detection and Channel Selection}
+\label{subsec:jump-detection}
+
+A random threshold $r \sim \mathrm{Uniform}(0, 1]$ is drawn at the
+start of each inter-jump interval (and redrawn immediately after every
+jump). A jump is detected when:
+
+\begin{equation}
+  \|\ket{\psi(t)}\|^2 < r
+  \label{eq:jump-detect}
+\end{equation}
+
+Upon detection, the jump channel $k^*$ is selected with probability
+proportional to $\|L_k\ket{\psi}\|^2$:
+
+\begin{equation}
+  \Pr(\text{channel } k) = \frac{\|L_k\ket{\psi}\|^2}{\sum_{j}\|L_j\ket{\psi}\|^2}
+  \label{eq:jump-prob}
+\end{equation}
+
+The post-jump state is renormalized:
+
+\begin{equation}
+  \ket{\psi} \leftarrow \frac{L_{k^*}\ket{\psi}}{\|L_{k^*}\ket{\psi}\|}
+  \label{eq:post-jump}
+\end{equation}
+
+\subsection{Observable Estimation}
+\label{subsec:observables}
+
+For a Hermitian observable $O$, the MCWF estimator is:
+
+\begin{equation}
+  \langle O \rangle(t)
+    \approx \frac{1}{M} \sum_{m=1}^{M}
+      \frac{\braket{\psi^{(m)}(t)|O|\psi^{(m)}(t)}}
+           {\braket{\psi^{(m)}(t)|\psi^{(m)}(t)}}
+  \label{eq:observable-est}
+\end{equation}
+
+where the denominator accounts for the fact that trajectories are stored
+in an unnormalized form between output intervals. In LiQuID, the
+\code{ObservableFn} callable is responsible for the normalization;
+the \code{ObservableAccumulator} computes only the sum and variance.
+
+\subsection{Algorithm Summary}
+\label{subsec:algorithm-summary}
+
+\begin{algorithm}[H]
+\label{alg:mcwf}
+\textbf{Algorithm: MCWF Single Trajectory} (one call to
+\code{MCWFPropagator::advance})
+
+\begin{enumerate}[leftmargin=2em,label=\arabic*.]
+  \item Select step size $\delta t$ (warm-start from previous step).
+  \item \textbf{ODE step}: integrate \cref{eq:nhse} from $t$ to $t + \delta t$
+        using the configured stepper (RK4 or DOPRI45), yielding
+        $\ket{\psi_{\mathrm{prop}}}$.
+  \item \textbf{Jump check}: if $\|\ket{\psi_{\mathrm{prop}}}\|^2 > r$:
+    \begin{enumerate}[label=3\alph*.]
+      \item Accept step: $\ket{\psi} \leftarrow \ket{\psi_{\mathrm{prop}}}$,
+            $t \leftarrow t + \delta t$.
+      \item Return \code{Advanced} (or \code{Completed} if $t \geq t_{\mathrm{final}}$).
+    \end{enumerate}
+  \item \textbf{Jump handling}: a jump occurred in $[t, t+\delta t]$:
+    \begin{enumerate}[label=4\alph*.]
+      \item (Phase 3) Locate exact jump time via bisection.
+      \item Compute $p_k = \|L_k\ket{\psi}\|^2$ for all $k$.
+      \item Draw channel $k^* \sim \{p_k / \sum p_k\}$.
+      \item Apply: $\ket{\psi} \leftarrow L_{k^*}\ket{\psi} / \|L_{k^*}\ket{\psi}\|$.
+      \item Redraw $r \sim \mathrm{Uniform}(0,1]$.
+      \item Reset stepper (state is discontinuous).
+      \item Return \code{JumpOccurred}.
+    \end{enumerate}
+  \item If numerical failure (step size collapse): return \code{Failed}.
+\end{enumerate}
+\end{algorithm}
+
+\begin{notebox}
+  \code{advance()} returns at the \emph{first} jump, not after all jumps
+  to $t_{\mathrm{target}}$. This event-driven design allows the
+  \code{EnsembleManager} to inspect, suspend, or redirect a trajectory
+  after each jump without re-entering the propagation loop.
+\end{notebox}
+
+% ============================================================
+%  PART II — API REFERENCE
+% ============================================================
+\part{API Reference}
+
+% -------------------------------------------------------------
+\chapter{Quick Start}
+\label{chap:quickstart}
+% -------------------------------------------------------------
+
+\section{The Five-Minute Example}
+\label{sec:five-minute}
+
+The following complete program simulates a two-level atom decaying
+from its excited state at rate $\gamma = 1.0$, with a resonance
+frequency $\omega = 1.0$. The exact solution for the expectation value
+of $\sigma_z = \ket{e}\bra{e} - \ket{g}\bra{g}$ is:
+
+\begin{equation}
+  \langle \sigma_z(t) \rangle = 2 e^{-\gamma t} - 1
+  \label{eq:two-level-exact}
+\end{equation}
+
+\begin{minted}[linenos]{cpp}
+#include "liquid/liquid.hpp"
+using namespace liquid;
+using namespace liquid::ensemble;
+
+int main() {
+    // -- Physical parameters ------------------------------------------------
+    const double omega = 1.0;    // transition frequency [arbitrary units]
+    const double gamma = 1.0;    // spontaneous emission rate
+    const double T     = 3.0;    // total simulation time
+
+    // -- Hamiltonian: H = (omega/2) * sigma_z ------------------------------
+    // Basis: |0> = excited, |1> = ground
+    DenseOperator H(2);
+    H(0, 0) = Scalar{ omega / 2.0, 0.0};
+    H(1, 1) = Scalar{-omega / 2.0, 0.0};
+
+    // -- Jump operator: L = sqrt(gamma) * sigma_minus ----------------------
+    // sigma_minus = |1><0|: maps excited |0> to ground |1>
+    DenseOperator L(2);
+    L(1, 0) = Scalar{std::sqrt(gamma), 0.0};
+
+    // -- Observable: sigma_z = |0><0| - |1><1| -----------------------------
+    DenseOperator sz(2);
+    sz(0, 0) = Scalar{ 1.0, 0.0};
+    sz(1, 1) = Scalar{-1.0, 0.0};
+
+    // -- Build simulation --------------------------------------------------
+    Simulation sim = SimulationBuilder{}
+        .hamiltonian(std::move(H))
+        .collapse_operator(std::move(L))
+        .observe("sigma_z", std::move(sz))
+        .seed(42)
+        .dt(1e-3)
+        .stop_at_sem(0.01)          // stop when relative SEM < 1%
+        .min_trajectories(100)
+        .max_trajectories(10000)
+        .build();
+
+    // -- Initial state: excited state |0> ----------------------------------
+    StateVector psi0(2);
+    psi0[0] = Scalar{1.0, 0.0};   // |0> component
+    psi0[1] = Scalar{0.0, 0.0};   // |1> component
+
+    // -- Run ---------------------------------------------------------------
+    auto result = sim.run(psi0, 0.0, T);
+
+    // -- Output -----------------------------------------------------------
+    const double exact = 2.0 * std::exp(-gamma * T) - 1.0;
+    std::printf("<sigma_z>(T=%.1f) = %.4f +/- %.4f  [exact: %.4f]  N=%zu\n",
+        T,
+        result.observables[0].mean,
+        result.observables[0].sem,
+        exact,
+        result.total_trajectories);
+
+    return 0;
+}
+\end{minted}
+
+Expected output (exact value $\approx -0.9003$):
+
+\begin{minted}{bash}
+<sigma_z>(T=3.0) = -0.9011 +/- 0.0089  [exact: -0.9003]  N=247
+\end{minted}
+
+\begin{notebox}
+  The simulation terminates at $N=247$ because the relative standard
+  error fell below the 1\% target before reaching the maximum
+  trajectory count. The minimum count of 100 was already satisfied.
+\end{notebox}
+
+\section{Building the Example}
+\label{sec:build-example}
+
+\begin{minted}{bash}
+g++ -std=c++17 -O3 -march=native -DNDEBUG \
+    -I path/to/LiQuID/include             \
+    -L path/to/LiQuID/build               \
+    -o two_level_decay two_level_decay.cpp \
+    -lliquid
+\end{minted}
+
+% -------------------------------------------------------------
+\chapter{Layer 0: Foundation}
+\label{chap:foundation}
+% -------------------------------------------------------------
+
+\section{Type System}
+\label{sec:types}
+
+All fundamental types are declared in \filename{liquid/core/types.hpp}
+and are available without qualification under \code{namespace liquid}.
+
+\subsection{Scalar Types}
+\label{subsec:scalar-types}
+
+\begin{table}[H]
+\centering
+\caption{Core type aliases. All are defined in \code{liquid/core/types.hpp}.}
+\label{tab:core-types}
+\begin{tabularx}{\linewidth}{L{22mm}L{38mm}X}
+\toprule
+\textbf{Alias} & \textbf{Underlying type} & \textbf{Semantic} \\
+\midrule
+\code{Scalar}  & \code{std::complex<double>} & Complex quantum amplitude \\
+\code{Real}    & \code{double}               & Real-valued quantity (time, rate, norm) \\
+\code{Dim}     & \code{std::size\_t}         & Hilbert space dimension $N$ \\
+\code{Idx}     & \code{std::size\_t}         & Row/column matrix index \\
+\code{TrajId}  & \code{std::uint64\_t}       & Unique trajectory identifier \\
+\code{Seed}    & \code{std::uint64\_t}       & RNG seed \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{invbox}
+  \code{Scalar = std::complex<double>} is a \textbf{frozen design decision}.
+  The library is not templated on the floating-point type.
+  Single-precision (\code{float}) and GPU (\code{half}) support are
+  explicitly deferred to a future policy layer and will not appear
+  in the public API before v1.0.
+\end{invbox}
+
+\subsection{The Imaginary Unit}
+\label{subsec:i-unit}
+
+\begin{minted}{cpp}
+// In liquid/core/types.hpp:
+inline constexpr Scalar i_unit{0.0, 1.0};
+\end{minted}
+
+Use \code{i\_unit} in preference to \code{std::complex<double>(0,1)}
+or the raw literal \code{1i}. The named constant is self-documenting
+and avoids the UDL \code{\_i} suffix's namespace dependency.
+
+\begin{minted}{cpp}
+// Correct usage:
+using namespace liquid;
+Scalar z = 2.5 * i_unit;          // z = 0 + 2.5i
+Scalar w = i_unit * H_element;    // w = i * h
+
+// Equivalent but less idiomatic:
+Scalar z2 = Scalar{0.0, 2.5};
+\end{minted}
+
+\subsection{Enumeration Types}
+\label{subsec:enums}
+
+\paragraph{\code{DiagnosticLevel}} Controls the volume of per-trajectory
+diagnostic data retained in memory:
+
+\begin{table}[H]
+\centering
+\caption{\code{DiagnosticLevel} values and their space complexity.}
+\label{tab:diag-levels}
+\begin{tabularx}{\linewidth}{L{32mm}L{20mm}X}
+\toprule
+\textbf{Value} & \textbf{Space} & \textbf{Content} \\
+\midrule
+\code{None}        & $\Order(1)$     & No diagnostics stored; zero per-step overhead \\
+\code{Summary}     & $\Order(N_j)$   & Summary statistics + jump event history (default) \\
+\code{Full}        & $\Order(N_t)$   & Above + subsampled norm history \\
+\code{StepHistory} & $\Order(N_t)$   & All of the above + per-step ODE records (expensive) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{\code{TrajectoryStatus}} Trajectory lifecycle states:
+\code{Initialized} $\to$ \code{Running} $\to$ \{\code{Completed} $|$ \code{Failed}\}.
+The \code{Suspended} state is used by the \code{EnsembleManager} for
+adaptive allocation (see \cref{sec:adaptive-allocator}).
+
+\paragraph{\code{SolverType}} \code{RK4Fixed} (Phase~1) and
+\code{DormandPrince45} (Phase~3). Select via \code{SimulationBuilder::solver()}.
+
+\section{Configuration Structs}
+\label{sec:config}
+
+\subsection{\texttt{PropagatorConfig}}
+\label{subsec:propagator-config}
+
+Controls the numerical behaviour of \code{MCWFPropagator}.
+All fields have defaults calibrated for quantum optics
+problems with $\gamma \sim \omega \sim 1$.
+
+\begin{minted}[linenos]{cpp}
+struct PropagatorConfig {
+    // ODE stepping
+    Real dt_initial      = 1e-3;   // Initial stepsize
+    Real dt_min          = 1e-12;  // Floor: triggers Failed status if hit
+    Real dt_max          = 1e-1;   // Ceiling: prevents overshooting features
+
+    // Adaptive solver tolerances (used by DormandPrince45)
+    Real atol            = 1e-8;   // Absolute local error tolerance
+    Real rtol            = 1e-6;   // Relative local error tolerance
+
+    // Jump detection
+    Real jump_tol        = 1e-6;   // Accuracy of bisection jump location
+    int  jump_bisect_max = 50;     // Max bisection iterations
+    int  max_step_rejects = 100;   // Max DOPRI45 rejections before Failed
+};
+\end{minted}
+
+\begin{warnbox}
+  Setting \code{dt\_min} too large will cause the solver to declare
+  \code{Failed} for stiff problems. If you observe unexpected failures,
+  lower \code{dt\_min} before increasing solver tolerances.
+\end{warnbox}
+
+\subsection{\texttt{StoppingCriteria}}
+\label{subsec:stopping-criteria}
+
+\begin{minted}[linenos]{cpp}
+struct StoppingCriteria {
+    Real        target_rel_sem      = 1e-2;   // 1% relative SEM
+    std::size_t min_trajectories    = 100;    // Never stop before this
+    std::size_t max_trajectories    = 100000; // Hard ceiling
+    Real        max_wall_seconds    = 0.0;    // 0 = no limit
+    bool        enforce_min         = true;   // Respect min even if converged
+};
+\end{minted}
+
+The monitor evaluates the following decision hierarchy after each batch:
+\begin{enumerate}
+  \item If $N < N_{\min}$: \code{Continue} (hard floor).
+  \item If $\max_i \mathrm{SEM}_i / |\mu_i| < \varepsilon_{\mathrm{rel}}$:
+        \code{Converged}.
+  \item If $N \geq N_{\max}$ or elapsed time $> t_{\mathrm{wall}}$:
+        \code{BudgetHit}.
+  \item If \code{request\_stop()} was called: \code{Forced}.
+  \item Otherwise: \code{Continue}.
+\end{enumerate}
+
+\section{Random Number Generator}
+\label{sec:rng}
+
+\subsection{Algorithm: xoshiro256**}
+\label{subsec:xoshiro}
+
+\code{RNGState} implements the \emph{xoshiro256**} algorithm by
+Blackman and Vigna (2018). Key properties:
+
+\begin{itemize}
+  \item 256-bit state (four \code{uint64\_t}): 32 bytes.
+  \item Period $2^{256} - 1 \approx 1.16 \times 10^{77}$.
+  \item Passes all BigCrush and PractRand statistical tests.
+  \item Approximately $4\times$ faster than \code{std::mt19937\_64}
+        with $78\times$ smaller state.
+  \item \emph{No heap allocation}. The entire state fits in two
+        cache lines.
+\end{itemize}
+
+\subsection{Seeding Protocol}
+\label{subsec:seeding}
+
+\begin{minted}[linenos]{cpp}
+class RNGState {
+public:
+    // Combine global_seed and traj_id via splitmix64.
+    // Different (global_seed, traj_id) pairs are guaranteed to
+    // produce statistically independent streams.
+    void seed(Seed global_seed, TrajId traj_id) noexcept;
+
+    // Returns a value in (0, 1]  --  note: open at zero.
+    // Zero is excluded to prevent spurious immediate jumps at t=0.
+    Real draw_uniform() noexcept;
+
+    // Returns an integer in [0, n-1].
+    std::size_t draw_int(std::size_t n) noexcept;
+
+    // State serialization for checkpointing.
+    void serialize(std::ostream& os) const;
+    static RNGState deserialize(std::istream& is);
+};
+\end{minted}
+
+\begin{invbox}
+  \textbf{INV-3 (RNG Exclusivity):} \code{core.rng} is the \emph{sole}
+  source of randomness for its trajectory. No global, static, or
+  thread-local RNG is accessed anywhere in LiQuID. This guarantees
+  that simulation results are byte-identical regardless of thread
+  scheduling, provided the seed and trajectory count are the same.
+\end{invbox}
+
+The seeding protocol uses \emph{splitmix64} — a bijective hash on
+\code{uint64\_t} — to combine the global seed and trajectory identifier:
+
+\begin{equation}
+  s_0^{(m)} = \mathrm{splitmix64}(g \oplus m)
+  \label{eq:seed}
+\end{equation}
+
+where $g$ is the global seed and $m$ is the trajectory index.
+Different values of $g$ produce statistically independent ensembles,
+enabling reproducible parameter sweeps.
+
+% -------------------------------------------------------------
+\chapter{Layer 1: Linear Algebra}
+\label{chap:linalg}
+% -------------------------------------------------------------
+
+\section{StateVector}
+\label{sec:statevector}
+
+\code{StateVector} represents a quantum state $\ket{\psi} \in \complex^N$.
+It is stored as a contiguous \code{std::vector<Scalar>} — a flat array
+of $N$ complex doubles on the heap.
+
+\subsection{Construction and Lifecycle}
+\label{subsec:sv-construction}
+
+\begin{minted}[linenos]{cpp}
+// Construct zero-initialized vector of dimension N
+StateVector psi(N);
+
+// Construct with explicit fill value
+StateVector psi(N, Scalar{0.5, 0.0});
+
+// Copy and move semantics follow standard value semantics.
+// Copies are deep (new allocation); moves are O(1).
+StateVector phi = psi;                 // deep copy
+StateVector chi = std::move(psi);      // O(1) move; psi is now empty
+\end{minted}
+
+\subsection{Element Access}
+\label{subsec:sv-access}
+
+\begin{minted}{cpp}
+psi[0] = Scalar{1.0, 0.0};   // excited state amplitude
+psi[1] = Scalar{0.0, 0.0};   // ground state amplitude
+
+// Bounds-checking in Debug builds (assert); unchecked in Release.
+// Idx is std::size_t  --  never pass negative integers.
+\end{minted}
+
+\subsection{Mathematical Operations}
+\label{subsec:sv-math}
+
+\begin{table}[H]
+\centering
+\caption{\code{StateVector} mathematical interface.}
+\label{tab:sv-methods}
+\begin{tabularx}{\linewidth}{L{48mm}L{14mm}X}
+\toprule
+\textbf{Method signature} & \textbf{Alloc?} & \textbf{Computes} \\
+\midrule
+\code{Real norm\_sq() const}      & No  & $\sum_i |\psi_i|^2$ \\
+\code{Real norm() const}          & No  & $\sqrt{\sum_i |\psi_i|^2}$ \\
+\code{void normalize()}           & No  & $\ket{\psi} \leftarrow \ket{\psi}/\|\ket{\psi}\|$ \\
+\code{void scale(Scalar a)}       & No  & $\ket{\psi} \leftarrow \alpha\ket{\psi}$ \\
+\code{void add\_scaled(sv, a)}    & No  & $\ket{\psi} += \alpha\ket{\phi}$ \\
+\code{void set\_zero()}           & No  & $\ket{\psi} \leftarrow \mathbf{0}$ \\
+\code{void copy\_from(sv)}        & No  & $\ket{\psi} \leftarrow \ket{\phi}$ \\
+\code{static Scalar inner(a,b)}   & No  & $\braket{a|b} = \sum_i \bar{a}_i b_i$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{perfbox}
+  \code{add\_scaled()} and \code{copy\_from()} are the two highest-frequency
+  operations inside every ODE stepper. They are implemented as tight
+  \code{for} loops over the contiguous data array. On x86-64 with
+  \code{-O3 -march=native}, the compiler auto-vectorizes them using
+  AVX2 (4 complex doubles per SIMD register). Calling \code{apply()}
+  (which allocates) inside an ODE loop defeats this optimization.
+\end{perfbox}
+
+\subsection{Normalization Invariant}
+\label{subsec:sv-norm-invariant}
+
+\begin{invbox}
+  \textbf{INV-1 (Normalization):}
+  $\|\ket{\psi}\|^2 \approx 1.0$ at $t = t_0$ and immediately after
+  every jump. Between jumps, $r < \|\ket{\psi}\|^2 \leq 1.0$
+  (strictly decreasing per \cref{eq:norm-decay}).
+  \code{normalize()} asserts \code{norm() > 0} in Debug builds and
+  is undefined behaviour if called on the zero vector in Release.
+\end{invbox}
+
+\section{DenseOperator}
+\label{sec:denseoperator}
+
+\code{DenseOperator} represents an $N \times N$ complex matrix
+$O \in \complex^{N \times N}$. It is stored \emph{row-major}:
+element $(i, j)$ maps to \code{data\_[i * dim\_ + j]}.
+
+\subsection{Storage Layout and Cache Behaviour}
+\label{subsec:dense-storage}
+
+Row-major storage is chosen because the dominant operation —
+\code{apply\_add(psi, alpha, out)} — sweeps the matrix
+row by row, accumulating one output component per row.
+For row $i$:
+
+\begin{equation}
+  \text{out}[i] \mathrel{+}= \alpha \sum_{j=0}^{N-1}
+    \underbrace{A[i \cdot N + j]}_{\text{contiguous in cache}}
+    \cdot \psi[j]
+  \label{eq:matvec-row}
+\end{equation}
+
+The inner sum reads $N$ contiguous \code{Scalar} values from
+\code{data\_}, which fits in $N \cdot 16$ bytes. For $N = 64$,
+row $i$ occupies 1 kB — exactly one 16-way set of cache lines
+on a typical L1 cache.
+
+\subsection{Construction}
+\label{subsec:dense-construction}
+
+\begin{minted}[linenos]{cpp}
+// Zero-initialized N x N matrix
+DenseOperator H(N);
+
+// From flat row-major data (no copy if moved)
+std::vector<Scalar> flat_data(N * N, Scalar{0.0, 0.0});
+flat_data[0 * N + 0] = Scalar{0.5, 0.0};  // H(0,0)
+flat_data[1 * N + 1] = Scalar{-0.5, 0.0}; // H(1,1)
+DenseOperator H2(N, std::move(flat_data));
+
+// Factory functions
+DenseOperator I  = make_identity(N);          // N x N identity
+DenseOperator Z  = make_zero_operator(N);     // N x N zero
+DenseOperator LL = adjoint_times(L);          // LdagL  (allocates)
+\end{minted}
+
+\subsection{The \texttt{apply\_add} Interface}
+\label{subsec:apply-add}
+
+\begin{minted}[linenos]{cpp}
+// HOT PATH  --  no allocation, called at every ODE sub-step.
+// Computes: out += alpha * A * psi
+// Preconditions: psi.size() == dim_, out.size() == dim_
+void DenseOperator::apply_add(
+    const StateVector& psi,    // input state
+    Scalar             alpha,  // scaling factor
+    StateVector&       out)    // accumulator (modified in-place)
+    const noexcept;
+
+// COLD PATH  --  allocates output vector.
+// Use only outside the ODE loop (operator testing, validation).
+StateVector DenseOperator::apply(const StateVector& psi) const;
+\end{minted}
+
+\begin{warnbox}
+  \textbf{Never call \code{apply()} inside an ODE callback.}
+  It allocates a new \code{StateVector} on every invocation.
+  For $10^4$ trajectories with $10^3$ steps each, this produces
+  $10^7$ allocations that defeat the allocator's free-list and
+  fragment the heap. Always use \code{apply\_add()} with a
+  pre-allocated output vector.
+\end{warnbox}
+
+\subsection{Algebraic Operations (Cold Path)}
+\label{subsec:dense-algebra}
+
+\begin{minted}[linenos]{cpp}
+DenseOperator Adag  = A.adjoint();        // Adag  --  allocates NxN
+DenseOperator C     = A.matmul(B);        // A*B  --  allocates NxN
+A.add_scaled(B, Scalar{2.0, 0.0});        // A += 2*B  (in-place)
+
+// Free functions
+Scalar ev = expectation(O, psi);          // <psi|O|psi> (allocates temp)
+\end{minted}
+
+\section{SparseOperator}
+\label{sec:sparseoperator}
+
+\code{SparseOperator} stores an $N \times N$ sparse complex matrix in
+\emph{Compressed Sparse Row} (CSR) format. It is intended for large
+Hilbert spaces where most matrix elements are structurally zero.
+
+\subsection{CSR Format}
+\label{subsec:csr-format}
+
+Three arrays define the sparse matrix:
+
+\begin{align}
+  \texttt{values}[k]       &\in \complex  &&\text{value of the $k$-th stored element} \\
+  \texttt{col\_indices}[k] &\in [0, N)    &&\text{column of the $k$-th stored element} \\
+  \texttt{row\_ptr}[i]     &\in [0, \mathrm{nnz}] &&\text{index in \texttt{values} where row $i$ begins}
+\end{align}
+
+Row $i$ contains elements at columns
+$\texttt{col\_indices}[\texttt{row\_ptr}[i] : \texttt{row\_ptr}[i+1]]$
+with values
+$\texttt{values}[\texttt{row\_ptr}[i] : \texttt{row\_ptr}[i+1]]$.
+The array \texttt{row\_ptr} has length $N+1$; the sentinel
+$\texttt{row\_ptr}[N] = \mathrm{nnz}$ gives the total non-zero count.
+
+\subsection{Construction from Triplets (COO $\to$ CSR)}
+\label{subsec:triplet-construction}
+
+\begin{minted}[linenos]{cpp}
+// Triplet: (row, col, value)
+std::vector<Triplet> trips;
+trips.push_back({0, 0, Scalar{ 1.0, 0.0}});  // diagonal: A(0,0) = 1
+trips.push_back({1, 1, Scalar{-1.0, 0.0}});  // diagonal: A(1,1) = -1
+trips.push_back({1, 0, Scalar{ 0.5, 0.0}});  // off-diag: A(1,0) = 0.5
+
+// Duplicate (row,col) entries are automatically summed.
+// Elements with |value| < 1e-300 are dropped.
+SparseOperator A(N, std::move(trips));
+
+std::printf("nnz = %zu, sparsity = %.4f\n",
+    A.nnz(), A.sparsity());  // sparsity = nnz / (N*N)
+\end{minted}
+
+\begin{notebox}
+  After construction, \code{SparseOperator} is immutable with respect
+  to its sparsity pattern. \code{add\_scaled(B, alpha)} internally
+  rebuilds the CSR structure from scratch. It is a cold-path operation
+  intended for precomputation, not for use inside solvers.
+\end{notebox}
+
+\subsection{The Sparse \texttt{apply\_add} Interface}
+\label{subsec:sparse-apply-add}
+
+The hot-path interface is identical to \code{DenseOperator}:
+
+\begin{minted}[linenos]{cpp}
+// out += alpha * A * psi  (no allocation)
+// Inner loop exploits CSR structure: only nnz multiplications
+// instead of N^2 for a dense matrix.
+void SparseOperator::apply_add(
+    const StateVector& psi,
+    Scalar             alpha,
+    StateVector&       out) const noexcept;
+\end{minted}
+
+The complexity of a sparse matrix-vector product is $\Order(\mathrm{nnz})$
+rather than $\Order(N^2)$. For the bosonic ladder operator $a$ in an
+$N$-dimensional Fock space, $\mathrm{nnz} = N-1$, giving a
+$N/(N-1) \approx N$ speedup over the dense case.
+
+\begin{perfbox}
+  For Hilbert spaces with $N \leq 64$ and fully connected operators,
+  use \code{DenseOperator}: cache reuse dominates and the overhead of
+  indirect addressing in CSR is not worth the reduced operation count.
+  Switch to \code{SparseOperator} when $\mathrm{nnz} / N^2 \lesssim 0.3$,
+  or equivalently when fewer than 30\% of matrix elements are non-zero.
+\end{perfbox}
+
+\subsection{Conversion and Free Functions}
+\label{subsec:sparse-free}
+
+\begin{minted}[linenos]{cpp}
+// Convert dense to sparse (drops elements below zero_tol = 1e-14)
+SparseOperator As = to_sparse(A_dense, 1e-14);
+
+// Convert sparse to dense (allocates N*N array)
+DenseOperator Ad = A_sparse.to_dense();
+
+// Create sparse identity
+SparseOperator I = make_sparse_identity(N);
+
+// Compute AdagA for sparse operator
+SparseOperator LdagL = sparse_adjoint_times(L);
+
+// Expectation value <psi|O|psi>
+Scalar ev = sparse_expectation(O_sparse, psi);
+\end{minted}
+
+% -------------------------------------------------------------
+\chapter{Layer 1: ODE Solvers}
+\label{chap:ode}
+% -------------------------------------------------------------
+
+\section{The Stepper Policy}
+\label{sec:stepper-concept}
+
+Both ODE solvers satisfy the \emph{Stepper named requirement} (C++17
+\emph{policy class} idiom). Any class satisfying this requirement can
+be used as the \code{StepperType} template parameter of
+\code{MCWFPropagator}. The requirement is documented below as an
+annotated struct; enforcement is via \code{static\_assert} on the
+return type of \code{try\_step} inside \code{MCWFPropagator}'s
+constructor.
+
+\begin{minted}[linenos]{cpp}
+// -- Stepper named requirement (C++17 policy idiom) -----------------------
+//
+// A type S satisfies Stepper if it provides:
+//
+//   (1) StepResult try_step(Real t,
+//                           const StateVector& psi_in,
+//                           StateVector&       psi_out,
+//                           Real               dt_suggested,
+//                           Real               t_max,
+//                           RHSFn&&            rhs_fn);
+//
+//       Integrates one step from (t, psi_in), writing the result into
+//       psi_out.  May shorten the step to respect t_max.
+//       Returns a StepResult describing acceptance and the next dt hint.
+//       RHSFn is any callable with signature:
+//           void(Real t, const StateVector& in, StateVector& accum)
+//
+//   (2) void reset(Real dt_initial) noexcept;
+//
+//       Discards all internal stepper state (e.g. FSAL buffers) and
+//       resets the working step size.  Must be called after every
+//       quantum jump because the state vector is discontinuous.
+//
+// The library enforces (1) at instantiation time:
+//   static_assert(
+//       std::is_same_v<
+//           decltype(std::declval<S>().try_step(...)),
+//           ode::StepResult>,
+//       "StepperType must return ode::StepResult from try_step()");
+
+struct StepResult {
+    bool accepted;    // true  = step accepted; psi_out is valid
+                      // false = step rejected (DOPRI45 only); psi_out undefined
+    Real dt_taken;    // actual step length used
+    Real dt_next;     // suggested step length for the next call
+    Real local_err;   // normalised local error estimate (0.0 for RK4)
+};
+\end{minted}
+
+The RHS callable passed to \code{try\_step} uses the
+\emph{accumulator pattern} — it adds to its output buffer rather
+than overwriting it, so the stepper can zero the buffer once and
+reuse it across stages:
+
+\begin{minted}{cpp}
+// Signature of the RHS callable accepted by every Stepper.
+// Computes:  accum += f(t, psi)   -- note: += not =
+// The stepper calls set_zero() on accum before the first stage;
+// rhs_fn must never zero it internally.
+void rhs_fn(Real t, const StateVector& psi, StateVector& accum);
+\end{minted}
+
+\section{Fixed-Step RK4 (\texttt{RK4Stepper})}
+\label{sec:rk4}
+
+\subsection{Algorithm}
+\label{subsec:rk4-algorithm}
+
+The classical fourth-order Runge--Kutta formula integrates
+$d\ket{\psi}/dt = f(t, \ket{\psi})$ over one step $h$:
+
+\begin{align}
+  k_1 &= f\bigl(t,\; \ket{\psi}\bigr) \label{eq:rk4-k1}\\
+  k_2 &= f\bigl(t + h/2,\; \ket{\psi} + (h/2)\,k_1\bigr) \label{eq:rk4-k2}\\
+  k_3 &= f\bigl(t + h/2,\; \ket{\psi} + (h/2)\,k_2\bigr) \label{eq:rk4-k3}\\
+  k_4 &= f\bigl(t + h,\;\; \ket{\psi} + h\,k_3\bigr) \label{eq:rk4-k4}\\
+  \ket{\psi(t+h)} &= \ket{\psi} + \frac{h}{6}\bigl(k_1 + 2k_2 + 2k_3 + k_4\bigr)
+  \label{eq:rk4-update}
+\end{align}
+
+The local truncation error is $\Order(h^5)$; the global error
+accumulates as $\Order(h^4)$.
+
+\subsection{Memory Layout}
+\label{subsec:rk4-memory}
+
+\code{RK4Stepper} pre-allocates five \code{StateVector} buffers
+($k_1, k_2, k_3, k_4$, and a temporary $\ket{\psi_{\mathrm{tmp}}}$)
+on the \emph{first} call to \code{try\_step()}, via
+\code{ensure\_scratch(Dim n)}. Subsequent calls reuse them.
+
+\begin{table}[H]
+\centering
+\caption{\code{RK4Stepper} memory footprint.}
+\label{tab:rk4-memory}
+\begin{tabular}{lll}
+\toprule
+\textbf{Buffer} & \textbf{Size} & \textbf{Purpose} \\
+\midrule
+\code{k1\_}  & $16N$ bytes & Stage 1 derivative \\
+\code{k2\_}  & $16N$ bytes & Stage 2 derivative \\
+\code{k3\_}  & $16N$ bytes & Stage 3 derivative \\
+\code{k4\_}  & $16N$ bytes & Stage 4 derivative \\
+\code{tmp\_} & $16N$ bytes & Intermediate state \\
+\midrule
+Total & $80N$ bytes & (e.g., $80\times64 = 5120$ bytes for $N=64$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{API}
+\label{subsec:rk4-api}
+
+\begin{minted}[linenos]{cpp}
+// Construct with fixed stepsize
+ode::RK4Stepper stepper(1e-3);    // dt = 1e-3
+
+// Or default-construct and configure via PropagatorConfig
+ode::RK4Stepper stepper;
+stepper.reset(1e-3);
+
+// StepResult (always accepted for RK4)
+struct StepResult {
+    bool  accepted;    // true always for RK4
+    Real  dt_taken;    // actual dt (may be clamped by t_max)
+    Real  dt_next;     // suggestion for next step (same as dt_taken for RK4)
+    Real  local_err;   // 0.0 for fixed-step
+};
+\end{minted}
+
+\section{Adaptive DOPRI45 (\texttt{DormandPrince45})}
+\label{sec:dopri45}
+
+\subsection{Algorithm}
+\label{subsec:dopri45-algorithm}
+
+The Dormand--Prince 4(5) method is an embedded Runge--Kutta pair
+with 7 stage evaluations per accepted step. The Butcher tableau
+is (Hairer, N{\o}rsett \& Wanner, Table~5.2):
+
+\begin{equation}
+\renewcommand{\arraystretch}{1.3}
+\begin{array}{c|ccccccc}
+0           &        &           &           &           &           &       &   \\
+\tfrac{1}{5}&\tfrac{1}{5} &      &           &           &           &       &   \\
+\tfrac{3}{10}&\tfrac{3}{40}&\tfrac{9}{40}& &           &           &       &   \\
+\tfrac{4}{5}&\tfrac{44}{45}&-\tfrac{56}{15}&\tfrac{32}{9}& &      &       &   \\
+\tfrac{8}{9}&\tfrac{19372}{6561}&-\tfrac{25360}{2187}&\tfrac{64448}{6561}&-\tfrac{212}{729}& & & \\
+1           &\tfrac{9017}{3168}&-\tfrac{355}{33}&\tfrac{46732}{5247}&\tfrac{49}{176}&-\tfrac{5103}{18656}& & \\
+1           &\tfrac{35}{384}&0&\tfrac{500}{1113}&\tfrac{125}{192}&-\tfrac{2187}{6784}&\tfrac{11}{84}& \\
+\hline
+\text{5th order} & \tfrac{35}{384} & 0 & \tfrac{500}{1113} & \tfrac{125}{192} & -\tfrac{2187}{6784} & \tfrac{11}{84} & 0 \\
+\end{array}
+\end{equation}
+
+The \emph{FSAL} (First Same As Last) property means that stage $k_7$ of
+an accepted step is identical to stage $k_1$ of the next step.
+This reduces the effective cost to \textbf{6 RHS evaluations per accepted
+step} rather than 7.
+
+\subsection{PI Stepsize Controller}
+\label{subsec:pi-controller}
+
+LiQuID uses the Gustafsson (1991) PI controller for adaptive step
+size selection:
+
+\begin{equation}
+  h_{n+1} = h_n \cdot S \cdot
+    \left(\frac{1}{\varepsilon_n}\right)^{\alpha_{\mathrm{PI}}}
+    \cdot
+    \left(\varepsilon_{n-1}\right)^{\beta_{\mathrm{PI}}}
+  \label{eq:pi-controller}
+\end{equation}
+
+where $\varepsilon_n$ is the normalised local error estimate,
+$S = 0.9$ is the safety factor, $\alpha_{\mathrm{PI}} = 0.7/5$,
+and $\beta_{\mathrm{PI}} = 0.4/5$ (default values calibrated for
+the 5th-order DOPRI method). The factor is clipped to $[0.2, 10]$
+to prevent runaway step changes.
+
+\subsection{FSAL Implementation}
+\label{subsec:fsal}
+
+\begin{minted}[linenos]{cpp}
+// In DormandPrince45::try_step()  --  excerpt:
+
+if (/* step accepted */) {
+    // Reuse k7 (the 7th stage of this step) as k1 of the next step.
+    // k7 = f(t + h, psi5) = f(t_new, psi_new)
+    // This is FSAL: saves one RHS evaluation per accepted step.
+    k1_.copy_from(k7_);
+    fsal_valid_ = true;
+    // ...
+}
+
+// In compute_stages(), on the first stage:
+if (!fsal_valid_) {
+    k1_.set_zero();
+    rhs_fn(t, y0, k1_);  // Evaluate only if FSAL not available
+    ++rhs_count_;
+}
+// Otherwise, k1_ already holds the correct value  --  no RHS call.
+\end{minted}
+
+\begin{perfbox}
+  FSAL reduces the typical DOPRI45 cost from 7 to 6 RHS evaluations
+  per step (a 14\% saving). The stepper's \code{reset()} method sets
+  \code{fsal\_valid\_ = false}, ensuring that after a quantum jump
+  (which resets the stepper), the first stage is recomputed correctly
+  from the post-jump wavefunction.
+\end{perfbox}
+
+\subsection{Configuration}
+\label{subsec:dopri45-config}
+
+\begin{minted}[linenos]{cpp}
+ode::DormandPrince45Config cfg;
+cfg.atol       = 1e-8;    // absolute tolerance
+cfg.rtol       = 1e-6;    // relative tolerance
+cfg.dt_initial = 1e-3;
+cfg.dt_min     = 1e-12;   // floor
+cfg.dt_max     = 1e-1;    // ceiling
+cfg.safety     = 0.9;     // PI controller safety factor
+cfg.alpha      = 0.7/5.0; // PI integral gain
+cfg.beta       = 0.4/5.0; // PI derivative gain
+cfg.max_rejects = 100;    // max rejections before failure
+
+ode::DormandPrince45 stepper(cfg);
+\end{minted}
+
+% -------------------------------------------------------------
+\chapter{Layer 2: Quantum System}
+\label{chap:system}
+% -------------------------------------------------------------
+
+\section{LindbladSet}
+\label{sec:lindbladset}
+
+\code{LindbladSet<Tag>} stores the collection of jump operators
+$\{L_k\}_{k=1}^{K}$ and their precomputed aggregate:
+
+\begin{equation}
+  \Gamma = \sum_{k=1}^{K} L_k^\dagger L_k
+  \label{eq:gamma-aggregate}
+\end{equation}
+
+Two specializations exist:
+\begin{itemize}
+  \item \code{LindbladSet<DenseTag>} — uses \code{DenseOperator}.
+  \item \code{LindbladSet<SparseTag>} — uses \code{SparseOperator}.
+\end{itemize}
+
+Both have an identical public interface.
+
+\subsection{Why Precompute $\Gamma$?}
+\label{subsec:gamma-precompute}
+
+The non-Hermitian Hamiltonian is $\Heff = H - \tfrac{i}{2}\Gamma$.
+At every ODE sub-step, the propagator must evaluate:
+
+\begin{equation}
+  -i\Heff\ket{\psi}
+    = -iH\ket{\psi} - \frac{1}{2}\Gamma\ket{\psi}
+  \label{eq:heff-apply}
+\end{equation}
+
+Without precomputation of $\Gamma$, this would require $K$ separate
+matrix-vector products $L_k^\dagger L_k \ket{\psi}$ at every step —
+$\Order(K \cdot N^2)$ work. Precomputing $\Gamma$ reduces this to a
+single product $\Gamma\ket{\psi}$ — $\Order(N^2)$, independent of $K$.
+For $K = 5$ operators, this is a $5\times$ reduction in the dominant
+inner-loop cost.
+
+\subsection{Construction and Immutability}
+\label{subsec:lindblad-construction}
+
+\begin{minted}[linenos]{cpp}
+// Dense specialization
+std::vector<DenseOperator> ops;
+ops.push_back(make_sigma_minus(gamma_1));
+ops.push_back(make_sigma_minus(gamma_2));  // two decay channels
+
+LindbladSet<DenseTag> L(std::move(ops));
+// ^ Internally calls precompute_gamma():
+//     gamma_ = L[0]dag*L[0] + L[1]dag*L[1]
+
+// Copy is disabled (prevents accidental stale-gamma bugs):
+// LindbladSet<DenseTag> L2 = L;  // COMPILE ERROR
+
+// Move is allowed:
+LindbladSet<DenseTag> L3 = std::move(L);  // OK
+\end{minted}
+
+\begin{invbox}
+  \textbf{INV-$\Gamma$:}
+  $\Gamma \equiv \sum_k L_k^\dagger L_k$ is established at construction
+  and is immutable thereafter. The copy constructor is deleted to
+  prevent the creation of a \code{LindbladSet} with a stale
+  $\Gamma$. Parameter sweeps must construct new \code{LindbladSet}
+  instances for each parameter value.
+\end{invbox}
+
+\subsection{Hot-Path Interface}
+\label{subsec:lindblad-hot}
+
+\begin{minted}[linenos]{cpp}
+// Called at every ODE sub-step.
+// Computes: out += -(i/2) * Gamma * psi
+// where Gamma = sum_k LkdagLk (precomputed)
+void LindbladSet<DenseTag>::apply_decay(
+    const StateVector& psi,
+    StateVector& out) const noexcept;
+// alpha = -(i/2) = Scalar{0.0, -0.5} is hard-coded
+\end{minted}
+
+\subsection{Cold-Path Interface}
+\label{subsec:lindblad-cold}
+
+\begin{minted}[linenos]{cpp}
+std::size_t K = L.num_channels();      // K = number of operators
+Dim         N = L.hilbert_dim();       // Hilbert space dimension
+
+// Evaluate L[k] * psi, store in out (used for jump probability)
+StateVector scratch(N);
+L.apply_channel(k, psi, scratch);      // out = L[k] * psi
+
+// Compute p[k] = ||L[k] * psi||^2 for all k
+std::vector<Real> probs(K);
+Real total = L.all_probabilities(psi, scratch, probs);
+// probs[k] = ||L[k] * psi||^2, total = sum(probs)
+\end{minted}
+
+\section{OpenSystem}
+\label{sec:opensystem}
+
+\code{OpenSystem<TimeTag, StorageTag>} encapsulates the complete
+physics description of the open quantum system.
+
+\subsection{Dense Time-Independent System}
+\label{subsec:opensystem-dense-ti}
+
+This is the primary type for Phase~1 simulations and is aliased
+as \code{DenseOpenSystem}:
+
+\begin{minted}[linenos]{cpp}
+// Construct from Hamiltonian and Lindblad operators.
+// Preconditions:
+//   H.size() == L.hilbert_dim()
+//   Both must be constructed before being moved in.
+DenseOpenSystem sys(std::move(H), std::move(L));
+// ^ Immediately calls precompute_H_eff():
+//     H_eff_ = H - (i/2) * Gamma
+
+// HOT PATH: d|psi>/dt = -i * H_eff * psi
+// Sets out = -i * H_eff * psi (out is overwritten, not accumulated)
+sys.apply_Heff(psi, out);
+
+// COLD PATH: jump operations
+std::vector<Real> probs(sys.num_channels());
+sys.jump_probabilities(psi, scratch, probs);  // fills probs
+sys.apply_jump(k, psi, scratch);              // psi <- Lk*psi/||Lk*psi||
+
+// Introspection
+sys.hilbert_dim();     // N
+sys.num_channels();    // K
+sys.H_eff();           // const ref to precomputed H_eff
+\end{minted}
+
+\subsection{Precomputed \texorpdfstring{$\Heff$}{Heff}}
+\label{subsec:heff-precompute}
+
+\begin{minted}[linenos]{cpp}
+// Excerpt from precompute_H_eff():
+void precompute_H_eff() {
+    H_eff_ = H_;                            // H_eff = H
+    constexpr Scalar neg_i_half{0.0, -0.5}; // -(i/2)
+    H_eff_.add_scaled(L_.decay_operator(),  // += -(i/2) * Gamma
+                      neg_i_half);
+}
+// Result: H_eff = H - (i/2) * Gamma  (frozen at construction)
+\end{minted}
+
+The constant $-i/2 = \{0.0, -0.5\}$ appears in three places:
+\code{precompute\_H\_eff()}, \code{apply\_decay()}, and the
+\code{apply\_Heff()} call to \code{H\_eff\_.apply\_add(psi, -i\_unit, out)}.
+
+\subsection{Sparse Time-Independent System}
+\label{subsec:opensystem-sparse}
+
+\begin{minted}[linenos]{cpp}
+// Construct with sparse operators
+SparseOpenSystem sys_sparse(
+    SparseOperator H_sparse,
+    LindbladSet<SparseTag> L_sparse);
+
+// Interface identical to DenseOpenSystem:
+sys_sparse.apply_Heff(psi, out);
+sys_sparse.apply_jump(k, psi, scratch);
+\end{minted}
+
+\subsection{Time-Dependent Hamiltonian}
+\label{subsec:opensystem-timedep}
+
+For $H(t) = H_{\mathrm{static}} + \sum_j f_j(t)\,H_{\mathrm{drive},j}$:
+
+\begin{minted}[linenos]{cpp}
+// DriveTerm: one time-dependent drive term
+DriveTerm<DenseTag> drive;
+drive.envelope = [](Real t) { return std::cos(omega_d * t); };
+drive.H_drive  = make_H_drive_dense(N, coupling_g);
+
+// Construct time-dependent open system
+auto sys_td = OpenSystem<TimeDependentTag, DenseTag>(
+    std::move(H_static),
+    std::move(L),
+    std::vector<DriveTerm<DenseTag>>{std::move(drive)});
+
+// HOT PATH (now takes time argument):
+// out = -i * [H_static + sum_j f_j(t)*H_drive_j - (i/2)*Gamma] * psi
+sys_td.apply_Heff(t, psi, out);
+\end{minted}
+
+% -------------------------------------------------------------
+\chapter{Layer 3: Trajectory}
+\label{chap:trajectory}
+% -------------------------------------------------------------
+
+\section{TrajectoryState}
+\label{sec:trajectory-state}
+
+\code{TrajectoryState} is the complete mutable record of a single
+MCWF trajectory. It is always created via the factory function
+\code{make\_trajectory\_state()} and modified exclusively by
+\code{MCWFPropagator::advance()}.
+
+\subsection{CoreState}
+\label{subsec:corestate}
+
+\begin{minted}[linenos]{cpp}
+struct CoreState {
+    StateVector      psi;       // current wavefunction  [INV-1]
+    Real             t;         // current time          [INV-4]
+    Real             t_final;   // end time  --  immutable  [INV-7]
+    Real             r;         // jump threshold in (0,1]  [INV-2]
+    Real             dt_last;   // warm-start hint for next step
+    Real             err_last;  // last local error estimate
+    RNGState         rng;       // trajectory-exclusive RNG [INV-3]
+    TrajId           traj_id;   // immutable identifier  [INV-6]
+    TrajectoryStatus status;    // lifecycle enum
+};
+\end{minted}
+
+The seven invariants of \code{CoreState} are defined in
+\cref{sec:types} and enforced exclusively by \code{MCWFPropagator}.
+
+\subsection{Factory Function}
+\label{subsec:trajectory-factory}
+
+\begin{minted}[linenos]{cpp}
+// The ONLY legal way to create a TrajectoryState.
+TrajectoryState ts = make_trajectory_state(
+    psi0,                           // initial state (normalized)
+    0.0,                            // t0
+    10.0,                           // t_final
+    traj_id,                        // unique ID (e.g., 0, 1, 2, ...)
+    global_seed,                    // seed for this trajectory's RNG
+    DiagnosticLevel::Summary        // optional, default Summary
+);
+// Postconditions:
+//   ts.core.psi.norm_sq() ~= 1.0
+//   ts.core.r is a fresh draw in (0,1]
+//   ts.core.status == TrajectoryStatus::Initialized
+\end{minted}
+
+\subsection{DiagnosticRecord}
+\label{subsec:diagnostic-record}
+
+\begin{minted}[linenos]{cpp}
+if (ts.has_diagnostics()) {
+    const auto& diag = ts.diag();
+
+    std::printf("Total steps : %llu\n", diag.total_steps);
+    std::printf("Total jumps : %llu\n", diag.total_jumps);
+    std::printf("Mean dt     : %.3e\n", diag.mean_dt);
+    std::printf("Min dt      : %.3e\n", diag.min_dt);
+    std::printf("Wall time   : %.3f s\n", diag.wall_time_s);
+
+    // Jump events (requires DiagnosticLevel::Summary or higher)
+    for (const auto& jump : diag.jumps) {
+        std::printf("  Jump at t=%.4f  channel=%zu  norm_before=%.6f\n",
+            jump.t, jump.channel, jump.norm_before);
+    }
+}
+\end{minted}
+
+\section{MCWFPropagator}
+\label{sec:mcwf-propagator}
+
+\code{MCWFPropagator<SystemType, StepperType>} implements the
+MCWF algorithm. It is the computational engine of LiQuID.
+
+\subsection{Per-Instance Scratch Space}
+\label{subsec:propagator-scratch}
+
+Five \code{StateVector} buffers are allocated at construction time
+and reused for every call to \code{advance()}:
+
+\begin{table}[H]
+\centering
+\caption{\code{MCWFPropagator} per-instance scratch buffers.}
+\label{tab:propagator-scratch}
+\begin{tabular}{lll}
+\toprule
+\textbf{Member} & \textbf{Size} & \textbf{Purpose} \\
+\midrule
+\code{psi\_scratch\_}   & $16N$ bytes & General-purpose temporary \\
+\code{psi\_proposed\_}  & $16N$ bytes & ODE step output before jump check \\
+\code{psi\_before\_}    & $16N$ bytes & State saved before each ODE step \\
+\code{accum\_tmp\_}     & $16N$ bytes & RHS accumulation temporary \\
+\code{prob\_scratch\_}  & $8K$ bytes  & Per-channel jump probabilities \\
+\midrule
+Total & $64N + 8K$ bytes & (e.g., $\sim 4.1\,\mathrm{kB}$ for $N=64, K=3$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{invbox}
+  \code{MCWFPropagator} is \textbf{not thread-safe}. Each thread must
+  own its own propagator instance. Multiple propagators may safely
+  share a single \code{const SystemType*} pointer because
+  \code{OpenSystem} is immutable and \code{apply\_Heff()} is
+  declared \code{const noexcept}.
+\end{invbox}
+
+\subsection{Direct Usage}
+\label{subsec:propagator-direct}
+
+Direct use of \code{MCWFPropagator} is appropriate when fine-grained
+control over a single trajectory is required — for example, in
+debugging, visualization, or single-trajectory benchmarking:
+
+\begin{minted}[linenos]{cpp}
+#include "liquid/liquid.hpp"
+using namespace liquid;
+using namespace liquid::ode;
+using namespace liquid::trajectory;
+
+int main() {
+    // Build system
+    DenseOperator H(2);
+    H(0,0) = Scalar{0.5, 0.0}; H(1,1) = Scalar{-0.5, 0.0};
+    DenseOperator L(2);
+    L(1,0) = Scalar{1.0, 0.0};
+
+    DenseOpenSystem sys(H, LindbladSet<DenseTag>({L}));
+
+    // Create trajectory
+    StateVector psi0(2);
+    psi0[0] = Scalar{1.0, 0.0};
+
+    auto ts = make_trajectory_state(psi0, 0.0, 5.0,
+                                    /*traj_id=*/0,
+                                    /*seed=*/42,
+                                    DiagnosticLevel::Full);
+
+    // Create propagator with RK4 stepper
+    PropagatorConfig cfg;
+    cfg.dt_initial = 1e-3;
+    MCWFPropagator<DenseOpenSystem, RK4Stepper> prop(
+        &sys,
+        RK4Stepper(cfg.dt_initial),
+        cfg);
+
+    // Event-driven loop: inspect state after every jump
+    using liquid::trajectory::StepOutcome;
+    StepOutcome outcome = StepOutcome::Advanced;
+
+    while (outcome != StepOutcome::Completed &&
+           outcome != StepOutcome::Failed) {
+        outcome = prop.advance(ts, ts.core.t_final);
+
+        if (outcome == StepOutcome::JumpOccurred) {
+            std::printf("Jump at t=%.4f  ||psi||^2 = %.6f\n",
+                ts.core.t,
+                ts.core.psi.norm_sq());
+        }
+    }
+
+    if (ts.is_completed()) {
+        std::printf("Trajectory completed. Total jumps: %llu\n",
+            ts.diag().total_jumps);
+    } else {
+        std::printf("Trajectory FAILED at t=%.4f\n", ts.core.t);
+    }
+
+    return 0;
+}
+\end{minted}
+
+\subsection{Convenience: \texttt{run\_to\_completion}}
+\label{subsec:run-to-completion}
+
+\begin{minted}[linenos]{cpp}
+// Equivalent to calling advance() in a loop until Completed or Failed.
+// Records total wall time in ts.diag().wall_time_s.
+TrajectoryStatus status = prop.run_to_completion(ts);
+
+if (status == TrajectoryStatus::Completed) {
+    // Compute observable
+    DenseOperator sz(2);
+    sz(0,0) = Scalar{1,0}; sz(1,1) = Scalar{-1,0};
+    Scalar ev = expectation(sz, ts.core.psi);
+    std::printf("<sz> = %.4f\n", ev.real());
+}
+\end{minted}
+
+% -------------------------------------------------------------
+\chapter{Layer 4: Ensemble Management}
+\label{chap:ensemble}
+% -------------------------------------------------------------
+
+\section{ObservableAccumulator}
+\label{sec:observable-accumulator}
+
+\code{ObservableAccumulator} bridges the physics layer (wavefunctions)
+and the statistics layer (Welford online estimators).
+
+\subsection{Observable Definitions}
+\label{subsec:observable-defs}
+
+An observable is defined as a callable \code{ObservableFn}:
+
+\begin{minted}[linenos]{cpp}
+using ObservableFn = std::function<Real(const StateVector&)>;
+
+// Example: expectation value of sigma_z
+DenseOperator sz(2);
+sz(0,0) = Scalar{1,0}; sz(1,1) = Scalar{-1,0};
+
+// The ObservableFn must normalize internally:
+//   <O> = <psi|O|psi> / <psi|psi>
+ObservableDef sz_def;
+sz_def.name = "sigma_z";
+sz_def.eval = [op = sz](const StateVector& psi) -> Real {
+    const Real nrm2 = psi.norm_sq();
+    if (nrm2 < 1e-14) return 0.0;
+    return expectation(op, psi).real() / nrm2;
+};
+\end{minted}
+
+\begin{notebox}
+  The \code{SimulationBuilder::observe("name", DenseOperator)} convenience
+  method automatically wraps the operator in a normalized expectation
+  value callable. Use the raw \code{ObservableFn} interface only when
+  computing custom quantities (e.g., photon number variance,
+  Wigner function samples, or operator correlators).
+\end{notebox}
+
+\section{ConvergenceMonitor}
+\label{sec:convergence-monitor}
+
+\code{ConvergenceMonitor} answers the question ``should the ensemble stop?''
+It is stateless except for an atomic stop flag:
+
+\begin{minted}[linenos]{cpp}
+StoppingCriteria sc;
+sc.target_rel_sem   = 0.01;    // 1% relative SEM
+sc.min_trajectories = 100;
+sc.max_trajectories = 50000;
+
+ConvergenceMonitor monitor(sc);
+
+// After each trajectory batch:
+ConvergenceReport report = monitor.evaluate(accum, elapsed_seconds);
+
+switch (report.decision) {
+    case StoppingDecision::Continue:   /* keep going */ break;
+    case StoppingDecision::Converged:
+        std::printf("Converged at N=%zu, rel_sem=%.4f\n",
+            report.trajectories_completed, report.current_rel_sem);
+        break;
+    case StoppingDecision::BudgetHit:
+        std::printf("Budget exhausted: %s\n",
+            report.reason.c_str());
+        break;
+    case StoppingDecision::Forced:
+        std::printf("Stop requested externally.\n");
+        break;
+}
+\end{minted}
+
+\section{Adaptive Allocator and Policies}
+\label{sec:adaptive-allocator}
+
+The allocator policy is a \code{std::function<AllocationDecision(EnsembleSummary)>}.
+The default is \code{make\_uniform\_policy()}: always spawn a new trajectory.
+
+\begin{minted}[linenos]{cpp}
+// Uniform policy (default): always new trajectory, round-robin seeds
+AllocatorPolicy uniform = make_uniform_policy(global_seed);
+
+// Greedy policy: prioritise seeds that minimise current SEM
+AllocatorPolicy greedy = make_greedy_policy(global_seed);
+
+// ML policy (Phase 6): 5-feature MLP guiding seed selection
+AllocatorPolicy ml = ensemble::ml::make_ml_policy(global_seed);
+\end{minted}
+
+The \code{TrajectorySummary} struct (with fields \code{total\_jumps},
+\code{total\_steps}, \code{wall\_time\_seconds}, \code{mean\_dt})
+is the primary feature vector for the ML policy. It is also the
+data format for logging and post-hoc analysis.
+
+\section{EnsembleManager}
+\label{sec:ensemble-manager}
+
+\code{EnsembleManager<SystemType, StepperType>} orchestrates
+multi-threaded trajectory dispatch via OpenMP:
+
+\begin{minted}[linenos]{cpp}
+// Typically not instantiated directly: use SimulationBuilder.
+// Shown here for illustration of the threading model.
+EnsembleManager<DenseOpenSystem, RK4Stepper> manager(
+    &sys,                            // shared, read-only
+    std::move(observable_defs),
+    stopping_criteria,
+    ensemble_config,                 // num_threads, seed, diag_level
+    make_uniform_policy(42));
+
+EnsembleResult result = manager.run(psi0, 0.0, t_final);
+
+std::printf("N=%zu  failed=%zu  jumps_mean=%.2f  wall=%.2fs\n",
+    result.total_trajectories,
+    result.failed_trajectories,
+    result.mean_jumps_per_trajectory,
+    result.total_wall_time_seconds);
+\end{minted}
+
+% -------------------------------------------------------------
+\chapter{Layer 5: Simulation Interface}
+\label{chap:simulation}
+% -------------------------------------------------------------
+
+\section{SimulationBuilder}
+\label{sec:simulation-builder}
+
+\code{SimulationBuilder} is the primary user-facing entry point.
+It uses the fluent builder pattern to accumulate configuration
+and produce a type-erased \code{Simulation} handle via \code{build()}.
+
+\subsection{Complete Builder Reference}
+\label{subsec:builder-reference}
+
+\begin{minted}[linenos]{cpp}
+Simulation sim = SimulationBuilder{}
+    // -- Physics ------------------------------------------------------
+    .hamiltonian(H)                  // DenseOperator: system Hamiltonian
+    .collapse_operator(L1)           // Add first jump operator
+    .collapse_operator(L2)           // Chain multiple operators
+    // -- Observables --------------------------------------------------
+    .observe("sz", sz)               // Dense operator observable
+    .observe("n_photon", [](const StateVector& psi) -> Real {
+        // Custom observable (e.g., photon number)
+        Real n = 0.0;
+        for (Idx i = 0; i < psi.size(); ++i)
+            n += static_cast<Real>(i) * std::norm(psi[i]);
+        return n / psi.norm_sq();
+    })
+    // -- ODE solver ---------------------------------------------------
+    .dt(1e-3)                        // PropagatorConfig::dt_initial
+    .solver(SolverType::DormandPrince45)  // default: RK4Fixed
+    .atol(1e-8)                      // DOPRI45: absolute tolerance
+    .rtol(1e-6)                      // DOPRI45: relative tolerance
+    // -- Stopping -----------------------------------------------------
+    .stop_at_sem(0.01)               // StoppingCriteria::target_rel_sem
+    .min_trajectories(100)
+    .max_trajectories(10000)
+    .max_wall_time(60.0)             // seconds; 0 = no limit
+    // -- Parallelism --------------------------------------------------
+    .num_threads(4)                  // requires -fopenmp
+    .seed(42)
+    // -- Diagnostics --------------------------------------------------
+    .diagnostic_level(DiagnosticLevel::Summary)
+    .build();
+\end{minted}
+
+\subsection{Running and Inspecting Results}
+\label{subsec:running-results}
+
+\begin{minted}[linenos]{cpp}
+auto result = sim.run(psi0, t0, t_final);
+
+// Per-observable statistics
+for (const auto& obs : result.observables) {
+    std::printf("%-20s  mean=%+.6f  sem=%.2e  rel_sem=%.2e  N=%zu\n",
+        obs.name.c_str(),
+        obs.mean,
+        obs.sem,
+        obs.rel_sem,
+        result.total_trajectories);
+}
+
+// Ensemble metadata
+std::printf("Convergence: %s\n", result.convergence.reason.c_str());
+std::printf("Threads used: %zu\n", result.num_threads_used);
+std::printf("Mean jumps/traj: %.2f\n", result.mean_jumps_per_trajectory);
+\end{minted}
+
+\section{Parameter Sweep}
+\label{sec:parameter-sweep}
+
+\code{ParameterSweepBuilder} runs the same simulation at multiple
+parameter values and collects results with full statistical metadata.
+
+\begin{minted}[linenos]{cpp}
+#include "liquid/simulation/parameter_sweep.hpp"
+using namespace liquid;
+
+int main() {
+    // Shared operators (not parameter-dependent)
+    DenseOperator sz(2);
+    sz(0,0) = Scalar{1,0}; sz(1,1) = Scalar{-1,0};
+
+    StateVector psi0(2);
+    psi0[0] = Scalar{1.0, 0.0};  // excited state
+
+    // Define the sweep
+    auto sweep = ParameterSweepBuilder{}
+        .parameter("gamma", {0.1, 0.5, 1.0, 2.0, 5.0, 10.0})
+        .simulation_factory([&sz](double gamma) {
+            DenseOperator H(2);
+            H(0,0) = Scalar{0.5, 0.0}; H(1,1) = Scalar{-0.5, 0.0};
+
+            DenseOperator L(2);
+            L(1,0) = Scalar{std::sqrt(gamma), 0.0};
+
+            return SimulationBuilder{}
+                .hamiltonian(std::move(H))
+                .collapse_operator(std::move(L))
+                .observe("sigma_z", sz)
+                .seed(42)
+                .dt(1e-3)
+                .stop_at_sem(0.01)
+                .min_trajectories(100)
+                .max_trajectories(5000)
+                .build();
+        })
+        .initial_state(psi0)
+        .time_interval(0.0, 5.0)
+        .build();
+
+    SweepResult result = sweep.run();
+
+    // Save to CSV: param,obs_name,mean,sem,rel_sem,N_trajectories
+    result.save_csv("sweep_gamma.csv");
+
+    // Access individual points
+    for (const auto& pt : result.points) {
+        const auto& obs = pt.result.observables[0];
+        std::printf("gamma=%.2f  <sz>=%.4f +/- %.4f  (N=%zu)\n",
+            pt.param_value, obs.mean, obs.sem,
+            pt.result.total_trajectories);
+    }
+
+    return 0;
+}
+\end{minted}
+
+% ============================================================
+%  PART III — EXAMPLES AND VALIDATION
+% ============================================================
+\part{Examples and Validation}
+
+% -------------------------------------------------------------
+\chapter{Physics Examples}
+\label{chap:examples}
+% -------------------------------------------------------------
+
+\section{Example 1: Two-Level Spontaneous Decay}
+\label{sec:ex-two-level}
+
+The paradigmatic open quantum system: a two-level atom at frequency
+$\omega$, decaying at rate $\gamma$ via spontaneous emission.
+
+\textbf{Exact solution:}
+\begin{equation}
+  \langle\sigma_z(t)\rangle = (P_e(0) - P_g(0))\,e^{-\gamma t}
+    + (P_g(0) - P_e(0))
+  \label{eq:two-level-exact-general}
+\end{equation}
+
+For initial excited state $\ket{e}$: $P_e(0) = 1$, so
+$\langle\sigma_z\rangle = 2e^{-\gamma t} - 1$.
+
+\begin{minted}[linenos]{cpp}
+#include "liquid/liquid.hpp"
+#include <cmath>
+#include <cstdio>
+using namespace liquid;
+using namespace liquid::ensemble;
+
+int main() {
+    const double omega = 1.0;
+    const double gamma = 1.0;
+    const double T     = 5.0;
+
+    // Hamiltonian
+    DenseOperator H(2);
+    H(0,0) = Scalar{ omega/2, 0}; H(1,1) = Scalar{-omega/2, 0};
+
+    // Jump operator: sigma_minus = sqrt(gamma) |g><e|
+    DenseOperator L(2);
+    L(1,0) = Scalar{std::sqrt(gamma), 0};
+
+    // Observable: sigma_z = |e><e| - |g><g|
+    DenseOperator sz(2);
+    sz(0,0) = Scalar{1, 0}; sz(1,1) = Scalar{-1, 0};
+
+    // Build and run
+    Simulation sim = SimulationBuilder{}
+        .hamiltonian(std::move(H))
+        .collapse_operator(std::move(L))
+        .observe("sigma_z", std::move(sz))
+        .seed(1337)
+        .dt(1e-3)
+        .stop_at_sem(0.005)          // 0.5% SEM target
+        .min_trajectories(200)
+        .max_trajectories(20000)
+        .build();
+
+    StateVector psi0(2);
+    psi0[0] = Scalar{1.0, 0.0};  // excited state
+
+    auto result = sim.run(psi0, 0.0, T);
+
+    const double exact = 2.0 * std::exp(-gamma * T) - 1.0;
+    const double error = std::abs(result.observables[0].mean - exact);
+    const double nsig  = error / result.observables[0].sem;
+
+    std::printf("=== Two-Level Spontaneous Decay ===\n");
+    std::printf("  <sigma_z>  MCWF : %+.6f +/- %.6f\n",
+        result.observables[0].mean,
+        result.observables[0].sem);
+    std::printf("  <sigma_z>  Exact: %+.6f\n", exact);
+    std::printf("  Deviation        : %.2f sigma\n", nsig);
+    std::printf("  Trajectories     : %zu\n", result.total_trajectories);
+    std::printf("  Mean jumps/traj  : %.2f\n",
+        result.mean_jumps_per_trajectory);
+
+    // Validation: result must be within 3 sigma of exact
+    return (nsig < 3.0) ? 0 : 1;
+}
+\end{minted}
+
+\section{Example 2: Sparse Jaynes--Cummings Steady State}
+\label{sec:ex-jc}
+
+The Jaynes--Cummings model describes a two-level atom coupled to a
+single electromagnetic cavity mode. At steady state with cavity decay
+$\kappa$ and atomic decay $\gamma$, the mean photon number
+$\langle a^\dagger a \rangle_{\mathrm{ss}}$ can be computed analytically.
+
+\textbf{System Hamiltonian} (rotating frame):
+\begin{equation}
+  H = \Delta_c\,a^\dagger a + \Delta_a\,\sigma_+\sigma_-
+    + g\,(a\,\sigma_+ + a^\dagger\,\sigma_-)
+    + \Omega\,(a + a^\dagger)
+  \label{eq:jc-hamiltonian}
+\end{equation}
+
+where $g$ is the vacuum Rabi coupling, $\Omega$ the drive amplitude,
+and $\Delta_{c,a}$ the cavity and atom detunings.
+
+
+% -----------------------------------------------------------------------------
+\section{Example 2: Driven Two-Level System}
+\label{sec:ex-driven}
+% -----------------------------------------------------------------------------
+
+A coherent drive (Rabi frequency $\Omega$) competes with spontaneous emission
+(rate $\gamma$). In the rotating frame at the resonance frequency, the
+Hamiltonian is $H = \Omega\,\sigma_x$ and the single jump operator is
+$L = \sqrt{\gamma}\,\sigma_-$. The optical Bloch equations give the
+steady-state excited population:
+
+\begin{equation}
+  \varrho_{ee}^{\mathrm{ss}}
+    = \frac{4\Omega^2}{\gamma^2 + 8\Omega^2}
+  \label{eq:driven-ss}
+\end{equation}
+
+Note the factor of 4 (not 1): it arises because
+$H = \Omega\,\sigma_x$ (not $\tfrac{\Omega}{2}\,\sigma_x$).
+\cref{eq:driven-ss} is verified numerically for two drive regimes.
+
+\begin{minted}[linenos]{cpp}
+#include "liquid/liquid.hpp"
+#include <cmath>
+#include <cstdio>
+using namespace liquid;
+using namespace liquid::ensemble;
+
+// Analytic steady-state excited population for H = Omega*sigma_x,
+// L = sqrt(gamma)*sigma_minus.
+static double analytic_rho_ee_ss(double Omega, double gamma) {
+    const double r = Omega / gamma;
+    return 4.0 * r * r / (1.0 + 8.0 * r * r);
+}
+
+// Build the rotating-frame driven open system
+static DenseOpenSystem make_driven_system(double Omega, double gamma) {
+    // H = Omega * sigma_x  (resonant drive, rotating frame)
+    DenseOperator H(2);
+    H(0, 1) = Scalar{Omega, 0.0};
+    H(1, 0) = Scalar{Omega, 0.0};
+
+    // L = sqrt(gamma) * sigma_minus
+    DenseOperator L(2);
+    L(1, 0) = Scalar{std::sqrt(gamma), 0.0};
+
+    std::vector<DenseOperator> ops;
+    ops.push_back(std::move(L));
+    return DenseOpenSystem(std::move(H), LindbladSet<DenseTag>(std::move(ops)));
+}
+
+int main() {
+    const double gamma  = 1.0;
+    const double T_ss   = 20.0;  // long enough to reach steady state
+    const int    N_traj = 3000;
+
+    // -- Regime 1: weak drive (Omega = 0.1*gamma) --------------------------
+    {
+        const double Omega     = 0.1 * gamma;
+        const double exact_ss  = analytic_rho_ee_ss(Omega, gamma);
+
+        auto sys = make_driven_system(Omega, gamma);
+
+        PropagatorConfig cfg;
+        cfg.dt_initial = 5e-4;  // small dt: Rabi period = pi/(Omega) ~ 31
+
+        double sum_rho = 0.0, sum_rho2 = 0.0;
+        StateVector psi0(2);
+        psi0[0] = Scalar{1.0, 0.0};  // start excited
+
+        for (int traj = 0; traj < N_traj; ++traj) {
+            liquid::ode::RK4Stepper stepper(cfg.dt_initial);
+            liquid::trajectory::MCWFPropagator<
+                DenseOpenSystem, liquid::ode::RK4Stepper> prop(&sys, stepper, cfg);
+
+            auto ts = liquid::trajectory::make_trajectory_state(
+                psi0, 0.0, T_ss,
+                static_cast<TrajId>(traj), 54321ULL,
+                DiagnosticLevel::None);
+
+            prop.run_to_completion(ts);
+
+            const Real ns      = ts.core.psi.norm_sq();
+            const double rho_e = ns > 1e-30
+                ? std::norm(ts.core.psi[0]) / ns
+                : 0.0;
+            sum_rho  += rho_e;
+            sum_rho2 += rho_e * rho_e;
+        }
+
+        const double mean = sum_rho / N_traj;
+        const double var  = sum_rho2 / N_traj - mean * mean;
+        const double sem  = std::sqrt(std::max(0.0, var) / N_traj);
+
+        std::printf("Weak drive (Omega/gamma = %.2f):\n", Omega / gamma);
+        std::printf("  rho_ee(MCWF)  = %.4f +/- %.4f\n", mean, sem);
+        std::printf("  rho_ee(exact) = %.4f\n", exact_ss);
+        std::printf("  |error|       = %.4f  (%.1f sigma)\n\n",
+            std::abs(mean - exact_ss),
+            std::abs(mean - exact_ss) / sem);
+    }
+
+    // -- Regime 2: strong drive (Omega = gamma) ----------------------------
+    {
+        const double Omega     = 1.0 * gamma;
+        const double exact_ss  = analytic_rho_ee_ss(Omega, gamma);
+
+        auto sys = make_driven_system(Omega, gamma);
+
+        PropagatorConfig cfg;
+        cfg.dt_initial = 5e-4;
+
+        double sum_rho = 0.0, sum_rho2 = 0.0;
+        StateVector psi0(2);
+        psi0[0] = Scalar{1.0, 0.0};
+
+        for (int traj = 0; traj < N_traj; ++traj) {
+            liquid::ode::RK4Stepper stepper(cfg.dt_initial);
+            liquid::trajectory::MCWFPropagator<
+                DenseOpenSystem, liquid::ode::RK4Stepper> prop(&sys, stepper, cfg);
+
+            auto ts = liquid::trajectory::make_trajectory_state(
+                psi0, 0.0, T_ss,
+                static_cast<TrajId>(traj), 99999ULL,
+                DiagnosticLevel::None);
+
+            prop.run_to_completion(ts);
+
+            const Real ns      = ts.core.psi.norm_sq();
+            const double rho_e = ns > 1e-30
+                ? std::norm(ts.core.psi[0]) / ns
+                : 0.0;
+            sum_rho  += rho_e;
+            sum_rho2 += rho_e * rho_e;
+        }
+
+        const double mean = sum_rho / N_traj;
+        const double var  = sum_rho2 / N_traj - mean * mean;
+        const double sem  = std::sqrt(std::max(0.0, var) / N_traj);
+
+        std::printf("Strong drive (Omega/gamma = %.2f):\n", Omega / gamma);
+        std::printf("  rho_ee(MCWF)  = %.4f +/- %.4f\n", mean, sem);
+        std::printf("  rho_ee(exact) = %.4f  [saturation: 1/3 limit]\n", exact_ss);
+        std::printf("  |error|       = %.4f  (%.1f sigma)\n",
+            std::abs(mean - exact_ss),
+            std::abs(mean - exact_ss) / sem);
+    }
+
+    return 0;
+}
+\end{minted}
+
+\begin{notebox}
+  \textbf{Rabi oscillations limit.} Setting $\gamma \to 0$ with $\Omega > 0$
+  yields nearly closed Rabi oscillations: $\langle\sigma_z(t)\rangle
+  = \cos(2\Omega t)\,e^{-\gamma t/2}$.
+  \code{LindbladSet} requires at least one operator, so use a very small
+  $\gamma \approx 10^{-2}$ to approximate the closed-system limit numerically.
+\end{notebox}
+
+% -----------------------------------------------------------------------------
+\section{Example 3: Cavity QED --- Jaynes--Cummings Model}
+\label{sec:ex-cavity-qed}
+% -----------------------------------------------------------------------------
+
+The Jaynes--Cummings (JC) model describes a single two-level atom
+coupled to one cavity mode. The composite Hilbert space is
+$\mathcal{H} = \mathcal{H}_{\mathrm{cav}} \otimes \mathcal{H}_{\mathrm{atom}}$
+with dimension $2N_{\mathrm{Fock}}$.
+
+\textbf{Basis convention.} A basis state $\ket{n, s}$ is indexed as
+$i = 2n + s$, where $n \in \{0,\ldots,N_F - 1\}$ is the photon number
+and $s \in \{0 = e, 1 = g\}$ is the atomic spin.
+
+\textbf{Hamiltonian (on resonance, $\omega_c = \omega_a = \omega$):}
+\begin{equation}
+  H = \omega\,a^\dagger a
+    + \frac{\omega}{2}\,\sigma_z
+    + g\,(a^\dagger\sigma_- + a\,\sigma_+)
+  \label{eq:jc-ham-full}
+\end{equation}
+
+\textbf{Conservation law.} The operator $\hat{N} = a^\dagger a + \sigma_+\sigma_-$
+is conserved by $H$. Starting from $\ket{1, e}$ ($\hat{N} = 2$),
+the system oscillates within the two-state manifold
+$\{\ket{1,e}, \ket{2,g}\}$ — not between $\ket{1,e}$ and $\ket{0,g}$.
+This is an important subtlety verified by the test below.
+
+\begin{minted}[linenos]{cpp}
+#include "liquid/liquid.hpp"
+#include <cmath>
+#include <cstdio>
+#include <vector>
+using namespace liquid;
+using namespace liquid::trajectory;
+using namespace liquid::ode;
+
+// Basis: |n, s> -> index 2*n + s  (s=0: excited, s=1: ground)
+static Idx jc_idx(int n, int s) { return static_cast<Idx>(2 * n + s); }
+
+// Cavity photon loss: L1 = sqrt(kappa) * a
+// a|n,s> = sqrt(n)|n-1,s>
+static SparseOperator make_L_cavity(int N_fock, double kappa) {
+    const Dim dim = 2 * N_fock;
+    std::vector<Triplet> trips;
+    for (int n = 1; n < N_fock; ++n) {
+        const double v = std::sqrt(kappa * static_cast<double>(n));
+        trips.push_back({jc_idx(n-1, 0), jc_idx(n, 0), Scalar{v, 0.0}});
+        trips.push_back({jc_idx(n-1, 1), jc_idx(n, 1), Scalar{v, 0.0}});
+    }
+    return SparseOperator(dim, std::move(trips));
+}
+
+// Atomic decay: L2 = sqrt(gamma_a) * sigma_minus
+// sigma_minus|n,e> = |n,g>
+static SparseOperator make_L_atomic(int N_fock, double gamma_a) {
+    const Dim dim = 2 * N_fock;
+    std::vector<Triplet> trips;
+    const double v = std::sqrt(gamma_a);
+    for (int n = 0; n < N_fock; ++n)
+        trips.push_back({jc_idx(n, 1), jc_idx(n, 0), Scalar{v, 0.0}});
+    return SparseOperator(dim, std::move(trips));
+}
+
+// JC Hamiltonian: omega*adaga + (omega/2)*sigma_z + g*(adagsigma_- + a*sigma_+)
+// Coupling term: adagsigma_-|n,e> = sqrt(n+1)|n+1,g>
+static SparseOperator make_H_jc(int N_fock, double omega, double g) {
+    const Dim dim = 2 * N_fock;
+    std::vector<Triplet> trips;
+
+    // Free cavity: omega * adaga diagonal
+    for (int n = 0; n < N_fock; ++n) {
+        const double diag = omega * static_cast<double>(n);
+        trips.push_back({jc_idx(n,0), jc_idx(n,0), Scalar{diag, 0.0}});
+        trips.push_back({jc_idx(n,1), jc_idx(n,1), Scalar{diag, 0.0}});
+    }
+
+    // Free atom: (omega/2)*sigma_z diagonal
+    for (int n = 0; n < N_fock; ++n) {
+        trips.push_back({jc_idx(n,0), jc_idx(n,0), Scalar{ omega/2.0, 0.0}});
+        trips.push_back({jc_idx(n,1), jc_idx(n,1), Scalar{-omega/2.0, 0.0}});
+    }
+
+    // JC interaction: adagsigma_- couples |n,e> -> |n+1,g>
+    for (int n = 0; n < N_fock - 1; ++n) {
+        const double v = g * std::sqrt(static_cast<double>(n + 1));
+        trips.push_back({jc_idx(n+1, 1), jc_idx(n, 0), Scalar{v, 0.0}});  // adagsigma_-
+        trips.push_back({jc_idx(n, 0), jc_idx(n+1, 1), Scalar{v, 0.0}});  // h.c. a*sigma_+
+    }
+    return SparseOperator(dim, std::move(trips));
+}
+
+// Photon number observable: n_hat = sum_n n * (|n,e><n,e| + |n,g><n,g|)
+static ObservableDef make_photon_number_obs(int N_fock) {
+    const Dim dim = 2 * N_fock;
+    std::vector<Triplet> trips;
+    for (int n = 0; n < N_fock; ++n) {
+        const double val = static_cast<double>(n);
+        trips.push_back({jc_idx(n,0), jc_idx(n,0), Scalar{val, 0.0}});
+        trips.push_back({jc_idx(n,1), jc_idx(n,1), Scalar{val, 0.0}});
+    }
+    SparseOperator n_op(dim, std::move(trips));
+    return {"photon_number",
+            [op = std::move(n_op)](const StateVector& psi) -> Real {
+                const Real ns = psi.norm_sq();
+                return ns > 1e-30
+                    ? sparse_expectation(op, psi).real() / ns
+                    : 0.0;
+            }};
+}
+
+// Excited-state population observable
+static ObservableDef make_excited_pop_obs(int N_fock) {
+    const Dim dim = 2 * N_fock;
+    std::vector<Triplet> trips;
+    for (int n = 0; n < N_fock; ++n)
+        trips.push_back({jc_idx(n,0), jc_idx(n,0), Scalar{1.0, 0.0}});
+    SparseOperator pe_op(dim, std::move(trips));
+    return {"excited_pop",
+            [op = std::move(pe_op)](const StateVector& psi) -> Real {
+                const Real ns = psi.norm_sq();
+                return ns > 1e-30
+                    ? sparse_expectation(op, psi).real() / ns
+                    : 0.0;
+            }};
+}
+
+int main() {
+    const int    N_fock   = 12;    // Fock space truncation
+    const double omega    = 1.0;   // cavity / atom frequency
+    const double g        = 0.5;   // vacuum Rabi coupling
+    const double kappa    = 0.2;   // cavity photon loss rate
+    const double gamma_a  = 0.05;  // atomic decay rate
+    const double T        = 5.0;   // simulation time
+
+    // Build sparse JC system
+    SparseOperator H   = make_H_jc(N_fock, omega, g);
+    SparseOperator L1  = make_L_cavity(N_fock, kappa);
+    SparseOperator L2  = make_L_atomic(N_fock, gamma_a);
+
+    std::vector<SparseOperator> ops;
+    ops.push_back(std::move(L1));
+    ops.push_back(std::move(L2));
+
+    SparseOpenSystem sys(
+        std::move(H),
+        LindbladSet<SparseTag>(std::move(ops)));
+
+    // Observables
+    std::vector<ObservableDef> obs_defs;
+    obs_defs.push_back(make_photon_number_obs(N_fock));
+    obs_defs.push_back(make_excited_pop_obs(N_fock));
+
+    // Stopping criteria
+    StoppingCriteria sc;
+    sc.min_trajectories = 500;
+    sc.max_trajectories = 5000;
+    sc.target_rel_sem   = 0.03;
+
+    EnsembleConfig ec;
+    ec.global_seed           = 42;
+    ec.diag_level            = DiagnosticLevel::None;
+    ec.propagator.dt_initial = 5e-3;
+
+    // Use the sparse+DOPRI45 factory (SparseOpenSystem requires
+    // Simulation::make_sparse_dopri45; SimulationBuilder supports
+    // DenseOperator only in v0.7.0)
+    Simulation sim = Simulation::make_sparse_dopri45(
+        std::move(sys), std::move(obs_defs), sc, ec);
+
+    // Initial state: |n=1, e> -- one photon, atom excited
+    StateVector psi0(2 * N_fock);
+    psi0[jc_idx(1, 0)] = Scalar{1.0, 0.0};
+
+    auto result = sim.run(psi0, 0.0, T);
+
+    std::printf("=== Jaynes-Cummings (N_fock=%d, g/kappa=%.1f) ===\n",
+        N_fock, g / kappa);
+    std::printf("  <n_photon>  = %.4f +/- %.4f  (N=%zu)\n",
+        result.observables[0].mean, result.observables[0].sem,
+        result.total_trajectories);
+    std::printf("  <rho_e>     = %.4f +/- %.4f\n",
+        result.observables[1].mean, result.observables[1].sem);
+    std::printf("  Mean jumps  = %.2f per trajectory\n",
+        result.mean_jumps_per_trajectory);
+    std::printf("  Convergence = %s\n",
+        result.convergence.reason.c_str());
+
+    return 0;
+}
+\end{minted}
+
+\begin{notebox}
+  The driven-dissipative Jaynes--Cummings parameter sweep (sweeping $g/\kappa$
+  to observe photon blockade) is provided in full in
+  \filename{examples/jc\_steady\_state.cpp}, using
+  \code{ParameterSweepBuilder::parameter\_logrange()}.
+\end{notebox}
+
+% -----------------------------------------------------------------------------
+\section{Example 4: Parameter Sweeps}
+\label{sec:ex-sweep}
+% -----------------------------------------------------------------------------
+
+\code{ParameterSweepBuilder} runs the same simulation at a list of
+parameter values and collects fully converged \code{EnsembleResult}
+objects at each point. Two sweep modes are supported: linear
+(\code{.parameter("name", \{v1, v2, ...\})}) and log-spaced
+(\code{.parameter\_logrange("name", lo, hi, N)}).
+
+The example below sweeps $\Omega/\gamma \in \{0.1, 0.5, 1.0, 2.0\}$
+for the driven two-level system and verifies the steady-state formula
+\cref{eq:driven-ss} at each point.
+
+\begin{minted}[linenos]{cpp}
+#include "liquid/liquid.hpp"
+#include <cmath>
+#include <cstdio>
+using namespace liquid;
+using namespace liquid::ensemble;
+
+int main() {
+    const double gamma = 1.0;
+    const double T_ss  = 15.0;  // sufficient time to reach steady state
+
+    // Initial state: excited |e>
+    StateVector psi0(2);
+    psi0[0] = Scalar{1.0, 0.0};
+
+    // Analytic steady-state formula
+    auto exact_ss = [&](double Omega) {
+        const double r = Omega / gamma;
+        return 4.0 * r * r / (1.0 + 8.0 * r * r);
+    };
+
+    // Define the sweep over Rabi frequency Omega
+    auto sweep = ParameterSweepBuilder{}
+        .parameter("Omega", {0.1, 0.5, 1.0, 2.0})
+        .simulation_factory([gamma](double Omega) {
+            // H = Omega * sigma_x  (resonant drive)
+            DenseOperator H(2);
+            H(0, 1) = Scalar{Omega, 0.0};
+            H(1, 0) = Scalar{Omega, 0.0};
+
+            // L = sqrt(gamma) * sigma_minus
+            DenseOperator L(2);
+            L(1, 0) = Scalar{std::sqrt(gamma), 0.0};
+
+            // Observable: rho_ee = |e><e|
+            DenseOperator rho_ee_op(2);
+            rho_ee_op(0, 0) = Scalar{1.0, 0.0};
+
+            return SimulationBuilder{}
+                .hamiltonian(std::move(H))
+                .collapse_operator(std::move(L))
+                .observe("rho_ee", std::move(rho_ee_op))
+                .seed(42)
+                .dt(5e-4)
+                .stop_at_sem(0.02)          // 2% relative SEM at each point
+                .min_trajectories(500)
+                .max_trajectories(5000)
+                .build();
+        })
+        .initial_state(psi0)
+        .time_interval(0.0, T_ss)
+        .build();
+
+    SweepResult result = sweep.run();
+
+    // Print table with comparison to analytic formula
+    std::printf("%-10s  %-12s  %-12s  %-10s  %-8s  %s\n",
+        "Omega", "rho_ee(MCWF)", "rho_ee(exact)", "rel_err(%)", "N", "converged");
+    std::printf("%s\n", std::string(72, '-').c_str());
+
+    for (const auto& pt : result.points) {
+        const auto& obs   = pt.result.observables[0];
+        const double exact = exact_ss(pt.param_value);
+        const double rel_err = 100.0 * std::abs(obs.mean - exact) / exact;
+
+        std::printf("%-10.4f  %-12.4f  %-12.4f  %-10.2f  %-8zu  %s\n",
+            pt.param_value,
+            obs.mean,
+            exact,
+            rel_err,
+            pt.result.total_trajectories,
+            pt.result.convergence.reason.c_str());
+    }
+
+    // Save full results (CSV columns: param,obs,mean,sem,rel_sem,N,...)
+    result.save_csv("sweep_Omega.csv");
+    std::printf("\nSaved: sweep_Omega.csv\n");
+
+    return 0;
+}
+\end{minted}
+
+\begin{perfbox}
+  When running sweeps with \code{num\_threads > 1}, the threads are
+  used \emph{within} each simulation point (ensemble parallelism),
+  not across sweep points. Sweep points are executed sequentially;
+  this allows early stopping to adapt $N$ independently at each point
+  rather than committing to a fixed $N$ before the sweep starts.
+\end{perfbox}
+
+% -----------------------------------------------------------------------------
+\section{Example 5: Convergence-Based Stopping}
+\label{sec:ex-stopping}
+% -----------------------------------------------------------------------------
+
+\code{StoppingCriteria} provides three independent stopping conditions:
+SEM target, trajectory budget, and wall-clock budget. The
+\code{ConvergenceMonitor} checks them after every batch of completed
+trajectories. The example below demonstrates all three and verifies
+that the SEM scales as $1/\sqrt{N}$.
+
+\begin{minted}[linenos]{cpp}
+#include "liquid/liquid.hpp"
+#include <cmath>
+#include <cstdio>
+using namespace liquid;
+using namespace liquid::ensemble;
+
+static DenseOperator make_H(double omega) {
+    DenseOperator H(2);
+    H(0,0) = Scalar{ omega/2.0, 0.0};
+    H(1,1) = Scalar{-omega/2.0, 0.0};
+    return H;
+}
+static DenseOperator make_L(double gamma) {
+    DenseOperator L(2);
+    L(1,0) = Scalar{std::sqrt(gamma), 0.0};
+    return L;
+}
+static DenseOperator make_sz() {
+    DenseOperator sz(2);
+    sz(0,0) = Scalar{1.0, 0.0};
+    sz(1,1) = Scalar{-1.0, 0.0};
+    return sz;
+}
+
+int main() {
+    const double omega = 1.0;
+    const double gamma = 1.0;
+    const double T     = 1.0;
+
+    StateVector psi0(2);
+    psi0[0] = Scalar{1.0, 0.0};
+
+    const double exact = 2.0 * std::exp(-gamma * T) - 1.0;
+
+    // -- 1. SEM-based stopping (1% relative SEM target) ---------------------
+    {
+        Simulation sim = SimulationBuilder{}
+            .hamiltonian(make_H(omega))
+            .collapse_operator(make_L(gamma))
+            .observe("sz", make_sz())
+            .seed(42)
+            .dt(1e-3)
+            .stop_at_sem(0.01)
+            .min_trajectories(50)
+            .max_trajectories(50000)
+            .build();
+
+        auto result = sim.run(psi0, 0.0, T);
+        const auto& obs = result.observables[0];
+
+        std::printf("=== SEM-based stopping ===\n");
+        std::printf("  <sz> = %.4f +/- %.4f  rel_sem = %.4f  N = %zu\n",
+            obs.mean, obs.sem, obs.rel_sem, result.total_trajectories);
+        std::printf("  Exact = %.4f  |error| = %.4f sigma\n",
+            exact, std::abs(obs.mean - exact) / obs.sem);
+        std::printf("  Decision: %s\n\n",
+            result.convergence.reason.c_str());
+    }
+
+    // -- 2. Wall-clock budget (0.3 s limit, impossibly tight SEM) -----------
+    {
+        Simulation sim = SimulationBuilder{}
+            .hamiltonian(make_H(omega))
+            .collapse_operator(make_L(gamma))
+            .observe("sz", make_sz())
+            .seed(999)
+            .dt(1e-3)
+            .stop_at_sem(1e-9)          // impossible: triggers budget
+            .min_trajectories(10)
+            .max_trajectories(1000000)
+            .max_wall_time(0.3)         // 300 ms hard limit
+            .build();
+
+        auto result = sim.run(psi0, 0.0, T);
+
+        std::printf("=== Wall-clock budget ===\n");
+        std::printf("  Decision  : %s\n",
+            result.convergence.reason.c_str());
+        std::printf("  N achieved: %zu  wall = %.3f s\n\n",
+            result.total_trajectories,
+            result.total_wall_time_seconds);
+    }
+
+    // -- 3. SEM scales as 1/sqrt(N): verify with three ensemble sizes --------
+    {
+        const std::size_t sizes[3] = {100, 400, 1600};
+        double sems[3];
+
+        std::printf("=== SEM scaling: expected SEM ~ 1/sqrt(N) ===\n");
+        for (int k = 0; k < 3; ++k) {
+            Simulation sim = SimulationBuilder{}
+                .hamiltonian(make_H(omega))
+                .collapse_operator(make_L(gamma))
+                .observe("sz", make_sz())
+                .seed(static_cast<Seed>(k * 777 + 42))
+                .dt(1e-3)
+                .min_trajectories(sizes[k])
+                .max_trajectories(sizes[k])
+                .build();
+
+            auto result  = sim.run(psi0, 0.0, T);
+            sems[k]      = result.observables[0].sem;
+            std::printf("  N = %4zu  SEM = %.5f\n", sizes[k], sems[k]);
+        }
+
+        // Ratios should be ~2 (since N quadruples each time)
+        std::printf("  SEM ratio N=100/400  = %.3f  (expected ~2.0)\n",
+            sems[0] / sems[1]);
+        std::printf("  SEM ratio N=400/1600 = %.3f  (expected ~2.0)\n",
+            sems[1] / sems[2]);
+    }
+
+    return 0;
+}
+\end{minted}
+
+\begin{warnbox}
+  \code{max\_wall\_time} measures elapsed real time from the first
+  \code{sim.run()} call. It does \emph{not} account for operator
+  construction or build time. On heavily loaded machines, the wall
+  clock continues to tick even while the process is descheduled.
+  Use \code{max\_trajectories} as the primary safety ceiling;
+  \code{max\_wall\_time} is a soft backstop for interactive sessions.
+\end{warnbox}
+
+% -----------------------------------------------------------------------------
+\section{Example 6: Sparse Hilbert Spaces}
+\label{sec:ex-sparse}
+% -----------------------------------------------------------------------------
+
+This example illustrates the three design patterns for sparse
+Hilbert-space simulations: (i)~using \code{SparseOperator} directly
+for a high-dimensional bosonic mode, (ii)~exploiting the
+\code{Simulation::make\_sparse\_dopri45} factory for non-builder-compatible
+system types, and (iii)~verifying the sparse--dense equivalence
+for a small test system.
+
+\subsubsection*{Pattern A: Bosonic Fock space (pure sparse)}
+
+For a single driven, damped harmonic oscillator (cavity without atom):
+
+\begin{equation}
+  H = \Delta\,a^\dagger a + \varepsilon(a + a^\dagger),
+  \qquad
+  L = \sqrt{\kappa}\,a
+  \label{eq:harmonic-osc}
+\end{equation}
+
+The steady-state mean photon number has the exact value
+$\langle a^\dagger a\rangle_{\mathrm{ss}} = \varepsilon^2/\kappa^2$
+in the linear regime ($\varepsilon \ll \kappa$).
+
+\begin{minted}[linenos]{cpp}
+#include "liquid/liquid.hpp"
+#include <cmath>
+#include <cstdio>
+#include <vector>
+using namespace liquid;
+using namespace liquid::ensemble;
+
+// Build the annihilation operator a for an N_fock-dimensional Fock space.
+// a|n> = sqrt(n)|n-1>  for n >= 1; a|0> = 0
+static SparseOperator make_a_fock(Dim N_fock) {
+    std::vector<Triplet> trips;
+    trips.reserve(N_fock - 1);
+    for (Dim n = 1; n < N_fock; ++n) {
+        trips.push_back({
+            n - 1,                            // row (output state index)
+            n,                                // col (input state index)
+            Scalar{std::sqrt(static_cast<double>(n)), 0.0}});
+    }
+    return SparseOperator(N_fock, std::move(trips));
+}
+
+// Driven harmonic oscillator Hamiltonian:
+// H = Delta * adaga + epsilon * (a + adag)
+static SparseOperator make_H_harmonic(Dim N_fock, double Delta, double eps) {
+    std::vector<Triplet> trips;
+    // Diagonal: Delta * n
+    for (Dim n = 0; n < N_fock; ++n)
+        trips.push_back({n, n, Scalar{Delta * static_cast<double>(n), 0.0}});
+    // Drive: epsilon * a  (lower triangular)
+    for (Dim n = 1; n < N_fock; ++n)
+        trips.push_back({n-1, n, Scalar{eps * std::sqrt(static_cast<double>(n)), 0.0}});
+    // Drive: epsilon * adag  (upper triangular)
+    for (Dim n = 1; n < N_fock; ++n)
+        trips.push_back({n, n-1, Scalar{eps * std::sqrt(static_cast<double>(n)), 0.0}});
+    return SparseOperator(N_fock, std::move(trips));
+}
+
+// Cavity decay: L = sqrt(kappa) * a
+static SparseOperator make_L_harmonic(Dim N_fock, double kappa) {
+    std::vector<Triplet> trips;
+    for (Dim n = 1; n < N_fock; ++n)
+        trips.push_back({
+            n - 1, n,
+            Scalar{std::sqrt(kappa * static_cast<double>(n)), 0.0}});
+    return SparseOperator(N_fock, std::move(trips));
+}
+
+// Photon number observable: adaga = diag(0, 1, 2, ..., N_fock-1)
+static ObservableDef make_n_obs(Dim N_fock) {
+    std::vector<Triplet> trips;
+    for (Dim n = 0; n < N_fock; ++n)
+        trips.push_back({n, n, Scalar{static_cast<double>(n), 0.0}});
+    SparseOperator n_op(N_fock, std::move(trips));
+    return {"photon_n",
+            [op = std::move(n_op)](const StateVector& psi) -> Real {
+                const Real ns = psi.norm_sq();
+                return ns > 1e-30
+                    ? sparse_expectation(op, psi).real() / ns
+                    : 0.0;
+            }};
+}
+
+int main() {
+    const Dim    N_fock = 40;    // truncation: must satisfy N >> <n>_ss
+    const double Delta  = 0.0;   // on resonance with drive
+    const double kappa  = 1.0;   // cavity decay rate
+    const double eps    = 0.2;   // drive amplitude (weak: eps << kappa)
+    const double T_ss   = 15.0;  // run until steady state
+
+    // Exact steady-state photon number (linear cavity)
+    const double exact_n_ss = (eps * eps) / (kappa * kappa);
+
+    std::printf("N_fock=%zu  Delta=%.1f  kappa=%.1f  eps=%.2f\n",
+        N_fock, Delta, kappa, eps);
+    std::printf("Exact <n>_ss = eps^2/kappa^2 = %.4f\n\n", exact_n_ss);
+
+    // Verify truncation is adequate: <n>_ss << N_fock
+    if (exact_n_ss > static_cast<double>(N_fock) / 2.0) {
+        std::fprintf(stderr,
+            "WARNING: N_fock=%zu may be too small for <n>_ss=%.1f\n",
+            N_fock, exact_n_ss);
+    }
+
+    // Build sparse system
+    SparseOperator H  = make_H_harmonic(N_fock, Delta, eps);
+    SparseOperator L  = make_L_harmonic(N_fock, kappa);
+
+    std::vector<SparseOperator> ops;
+    ops.push_back(std::move(L));
+    SparseOpenSystem sys(std::move(H), LindbladSet<SparseTag>(std::move(ops)));
+
+    // Report sparsity advantage over dense
+    const double nnz      = static_cast<double>(sys.H_eff().nnz());
+    const double dense_sq = static_cast<double>(N_fock * N_fock);
+    std::printf("H_eff sparsity: %.2f%%  (%g non-zeros vs %g dense)\n\n",
+        100.0 * nnz / dense_sq, nnz, dense_sq);
+
+    std::vector<ObservableDef> obs_defs;
+    obs_defs.push_back(make_n_obs(N_fock));
+
+    StoppingCriteria sc;
+    sc.min_trajectories = 300;
+    sc.max_trajectories = 5000;
+    sc.target_rel_sem   = 0.02;
+
+    EnsembleConfig ec;
+    ec.global_seed           = 42;
+    ec.diag_level            = DiagnosticLevel::None;
+    ec.propagator.dt_initial = 5e-3;
+
+    // Factory for SparseOpenSystem + DOPRI45
+    Simulation sim = Simulation::make_sparse_dopri45(
+        std::move(sys), std::move(obs_defs), sc, ec);
+
+    // Initial state: vacuum |0>
+    StateVector psi0(N_fock);
+    psi0[0] = Scalar{1.0, 0.0};
+
+    auto result = sim.run(psi0, 0.0, T_ss);
+
+    const auto& obs = result.observables[0];
+    std::printf("=== Driven harmonic oscillator (N_fock=%zu) ===\n", N_fock);
+    std::printf("  <n>(MCWF)  = %.4f +/- %.4f  (N=%zu)\n",
+        obs.mean, obs.sem, result.total_trajectories);
+    std::printf("  <n>(exact) = %.4f\n", exact_n_ss);
+    std::printf("  |error|    = %.4f  (%.1f sigma)\n",
+        std::abs(obs.mean - exact_n_ss),
+        std::abs(obs.mean - exact_n_ss) / obs.sem);
+
+    return 0;
+}
+\end{minted}
+
+\begin{perfbox}
+  The Hamiltonian \cref{eq:harmonic-osc} has $3N_F - 2$ non-zero elements
+  (one diagonal plus two off-diagonals of length $N_F - 1$ each).
+  For $N_F = 40$, this is 118 non-zeros versus $1600$ for a dense
+  matrix --- a $13.6\times$ memory saving and a comparable
+  reduction in matrix-vector product cost. The savings grow linearly
+  with $N_F$: for $N_F = 200$, the ratio exceeds $66\times$.
+\end{perfbox}
+
+% ============================================================
+%  PART IV — PERFORMANCE AND EXTENSION
+% ============================================================
+\part{Performance and Extension}
+
+% -------------------------------------------------------------
+\chapter{Performance Guide}
+\label{chap:performance}
+% -------------------------------------------------------------
+
+\section{Computational Complexity Model}
+\label{sec:complexity}
+
+\begin{table}[H]
+\centering
+\caption{Computational cost of each layer per trajectory.
+         $N$ = Hilbert dimension, $K$ = jump operators, $M$ = ODE steps,
+         $J$ = number of jumps.}
+\label{tab:complexity}
+\begin{tabularx}{\linewidth}{L{30mm}L{25mm}X}
+\toprule
+\textbf{Operation} & \textbf{Cost} & \textbf{Notes} \\
+\midrule
+Dense \code{apply\_add}  & $\Order(N^2)$  & Dominates for $N > 32$ \\
+Sparse \code{apply\_add} & $\Order(\mathrm{nnz})$ & $\ll N^2$ for sparse systems \\
+RK4 step                 & $4 \cdot \Order(N^2)$ & 4 RHS evaluations \\
+DOPRI45 step (accepted)  & $6 \cdot \Order(N^2)$ & 6 RHS (FSAL saves one) \\
+Jump detection           & $\Order(1)$    & Norm comparison only \\
+Jump channel selection   & $\Order(KN^2)$ & $K$ matvecs to compute $p_k$ \\
+State renormalization    & $\Order(N)$    & Linear sweep \\
+Observable evaluation    & $\Order(N^2)$  & Once per trajectory \\
+\midrule
+\textbf{Per-trajectory total} & $\Order(M \cdot N^2)$ & Dominated by ODE steps \\
+\textbf{Ensemble total}       & $\Order(M \cdot N^2 \cdot T_{\mathrm{traj}})$ & Linear in $T$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Memory Hierarchy Considerations}
+\label{sec:memory-hierarchy}
+
+\begin{perfbox}
+  For $N \leq 64$, the wavefunction $\ket{\psi}$ fits in
+  $64 \times 16 = 1\,\mathrm{kB}$, which resides in L1 cache.
+  The RK4 scratch buffers (5 vectors $= 5\,\mathrm{kB}$) fit in L1/L2.
+  A $64 \times 64$ dense matrix ($= 64\,\mathrm{kB}$) fits in L2.
+  Keeping all working data in L1/L2 is the primary performance objective
+  for small systems. Use \code{-march=native} to enable AVX2
+  auto-vectorization of the \code{add\_scaled} and \code{apply\_add} loops.
+\end{perfbox}
+
+\section{Dense vs.\ Sparse Crossover}
+\label{sec:dense-sparse-crossover}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.75\linewidth, height=50mm,
+  xlabel={Hilbert space dimension $N$},
+  ylabel={Relative speedup (sparse/dense)},
+  xmin=4, xmax=512,
+  ymin=0, ymax=20,
+  xmode=log, log basis x=2,
+  grid=major,
+  grid style={dotted, gray!50},
+  xtick={4,8,16,32,64,128,256,512},
+  xticklabels={4,8,16,32,64,128,256,512},
+  legend pos=north west,
+  title={Sparse speedup for bosonic annihilation operator $a$},
+]
+% nnz = N-1 for bosonic ladder; dense = N^2
+% speedup = N^2 / (N-1) ~= N
+\addplot[thick, color=LiquidTeal, mark=*]
+  coordinates {(4,1.3)(8,2.3)(16,4.3)(32,8.3)(64,16.3)(128,32.3)};
+\addlegendentry{$\approx N$ speedup ($\mathrm{nnz} = N-1$)}
+\addplot[thick, dashed, color=LiquidGold]
+  coordinates {(4,1)(512,1)};
+\addlegendentry{Dense baseline}
+\end{axis}
+\end{tikzpicture}
+\caption{Theoretical speedup of sparse vs.\ dense matrix-vector product
+         for the bosonic annihilation operator $a$ (non-zero elements: $N-1$).
+         The crossover to practical benefit occurs around $N \approx 32$.}
+\label{fig:sparse-speedup}
+\end{figure}
+
+\section{Multi-Threading Scaling}
+\label{sec:threading}
+
+The ensemble is \emph{embarrassingly parallel}: each trajectory is
+independent. With OpenMP enabled:
+
+\begin{minted}{cpp}
+// In EnsembleConfig:
+config.num_threads = std::thread::hardware_concurrency();
+\end{minted}
+
+Each thread owns:
+\begin{itemize}
+  \item One \code{MCWFPropagator} (and its scratch buffers).
+  \item One \code{ODE stepper} (and its scratch buffers).
+  \item One \code{ObservableAccumulator} (merged after each batch).
+\end{itemize}
+
+The shared read-only objects — \code{OpenSystem}, all operator matrices,
+observable definitions — are accessed concurrently without locks because
+they are immutable after construction.
+
+\begin{warnbox}
+  OpenMP must be enabled at compile time (\code{-fopenmp}) and at
+  CMake configuration time (\code{-DLIQUID\_OPENMP=ON}).
+  Setting \code{config.num\_threads > 1} on a build without OpenMP
+  has no effect; the simulation runs serially.
+\end{warnbox}
+
+% -------------------------------------------------------------
+\chapter{Extending LiQuID}
+\label{chap:extending}
+% -------------------------------------------------------------
+
+\section{Custom ODE Stepper}
+\label{sec:custom-stepper}
+
+Any class satisfying the Stepper concept (\cref{sec:stepper-concept})
+can be used as a drop-in replacement:
+
+\begin{minted}[linenos]{cpp}
+// Minimal custom stepper: symplectic Euler (first-order)
+class SymplecticEulerStepper {
+public:
+    explicit SymplecticEulerStepper(Real dt) : dt_(dt) {}
+
+    template<typename RHSFn>
+    ode::StepResult try_step(Real t,
+                              const StateVector& psi_in,
+                              StateVector& psi_out,
+                              Real dt_suggested,
+                              Real t_max,
+                              RHSFn&& rhs_fn)
+    {
+        const Real dt = std::min({dt_suggested, dt_, t_max - t});
+        ensure_scratch(psi_in.size());
+
+        // Compute derivative: k = f(t, psi_in)
+        k_.set_zero();
+        rhs_fn(t, psi_in, k_);
+
+        // Update: psi_out = psi_in + dt * k
+        psi_out.copy_from(psi_in);
+        psi_out.add_scaled(k_, Scalar{dt, 0.0});
+
+        return ode::StepResult{true, dt, dt_, 0.0};
+    }
+
+    void reset(Real dt_initial) noexcept { dt_ = dt_initial; }
+
+private:
+    void ensure_scratch(Dim n) {
+        if (k_.size() != n) k_ = StateVector(n);
+    }
+
+    Real        dt_;
+    StateVector k_;
+};
+
+// Use it with MCWFPropagator:
+MCWFPropagator<DenseOpenSystem, SymplecticEulerStepper> prop(
+    &sys,
+    SymplecticEulerStepper(1e-4),
+    cfg);
+\end{minted}
+
+\section{Custom Allocation Policy}
+\label{sec:custom-policy}
+
+\begin{minted}[linenos]{cpp}
+// Policy that preferentially runs more trajectories when
+// the failure rate is below 5%, and falls back to uniform otherwise.
+AllocatorPolicy my_policy = [seed = 42ULL](
+    const EnsembleSummary& summary) mutable -> AllocationDecision
+{
+    const double failure_rate =
+        static_cast<double>(summary.trajectories_failed) /
+        std::max(summary.trajectories_completed, std::size_t{1});
+
+    AllocationDecision dec;
+    dec.action = AllocationAction::SpawnNew;
+
+    if (failure_rate < 0.05) {
+        // Low failure rate: use a deterministic seed sequence
+        dec.seed = seed++;
+    } else {
+        // High failure rate: fall back to random seed
+        dec.seed = std::hash<double>{}(summary.wall_time_elapsed);
+    }
+    return dec;
+};
+
+// Pass to Simulation::make() or EnsembleManager
+auto sim = Simulation::make<DenseOpenSystem, ode::RK4Stepper>(
+    std::move(system),
+    std::move(observable_defs),
+    stopping_criteria,
+    ensemble_config,
+    my_policy);
+\end{minted}
+
+% -------------------------------------------------------------
+\chapter{Test Suite}
+\label{chap:tests}
+% -------------------------------------------------------------
+
+\section{Unit Tests}
+\label{sec:unit-tests}
+
+\begin{table}[H]
+\centering
+\caption{Unit test executables and their scope.}
+\label{tab:unit-tests}
+\begin{tabularx}{\linewidth}{L{48mm}X}
+\toprule
+\textbf{Target} & \textbf{Scope} \\
+\midrule
+\code{test\_rng}              & xoshiro256** uniformity, period, seed independence \\
+\code{test\_linalg}           & \code{StateVector}, \code{DenseOperator}: all methods and edge cases \\
+\code{test\_sparse}           & CSR construction, \code{apply\_add}, duplicate triplet handling \\
+\code{test\_opensystem}       & \code{H\_eff} precomputation, jump probabilities, apply\_jump \\
+\code{test\_trajectory\_state}& Factory postconditions, all seven invariants \\
+\code{test\_running\_statistics}& Welford online mean/variance, single-sample edge case \\
+\code{test\_ensemble}         & Convergence monitor, observable accumulator, parallel merge \\
+\code{test\_dopri45}          & FSAL correctness, PI controller, step rejection \\
+\code{test\_ml\_policy}       & Feature extraction, MLP forward pass, SGD convergence \\
+\code{test\_parameter\_sweep} & CSV output, factory invocation, OpenMP sweep \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Validation Tests}
+\label{sec:validation-tests}
+
+\begin{table}[H]
+\centering
+\caption{Physics validation tests and their analytical references.}
+\label{tab:validation-tests}
+\begin{tabularx}{\linewidth}{L{42mm}X}
+\toprule
+\textbf{Target} & \textbf{Reference} \\
+\midrule
+\code{val\_two\_level\_decay}
+  & $\langle\sigma_z\rangle = 2e^{-\gamma t}-1$; passes within $3\sigma$ \\
+\code{val\_driven\_two\_level}
+  & Driven qubit: steady-state Bloch vector vs.\ optical Bloch equations \\
+\code{val\_ensemble\_convergence}
+  & SEM $\propto 1/\sqrt{N}$: fit slope $= -0.5 \pm 0.05$ \\
+\code{val\_cavity\_qed}
+  & Jaynes--Cummings photon statistics: $g^{(2)}(0) < 1$ (antibunching) \\
+\code{val\_smart\_stopping}
+  & Early stopping triggers before \code{max\_trajectories} when converged \\
+\code{val\_ml\_policy}
+  & ML policy SEM reduction rate $\geq$ uniform policy within $10\%$ \\
+\code{val\_parameter\_sweep}
+  & Sweep monotonicity: $\langle\sigma_z\rangle_{\mathrm{ss}}$ decreasing with $\gamma$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Run all tests with:
+\begin{minted}{bash}
+ctest --test-dir build --output-on-failure -j$(nproc)
+\end{minted}
+
+% -------------------------------------------------------------
+\chapter{Known Limitations and Roadmap}
+\label{chap:limitations}
+% -------------------------------------------------------------
+
+\section{Known Limitations in v0.7.0}
+\label{sec:known-limitations}
+
+\begin{table}[H]
+\centering
+\caption{Known limitations and planned resolution phases.}
+\label{tab:limitations}
+\begin{tabularx}{\linewidth}{L{55mm}L{15mm}X}
+\toprule
+\textbf{Limitation} & \textbf{Phase} & \textbf{Notes} \\
+\midrule
+Phase 1 jump location: no bisection for RK4 & Phase 3 done & DOPRI45 path uses bisection \\
+No BLAS dependency & Phase 3+ & Manual loops; switch to BLAS for $N > 100$ \\
+\code{SimulationBuilder}: dense operators only & Phase 4 & Use \code{Simulation::make()} for sparse \\
+No Python bindings & Post-1.0 & pybind11 wrapper planned \\
+No GPU backend & Post-1.0 & Explicit deferred decision \\
+ML policy: seeds only, no rare-event biasing & Phase 6 & Infrastructure present, biasing deferred \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% -------------------------------------------------------------
+%  APPENDICES
+% -------------------------------------------------------------
+\appendix
+
+\chapter{Mathematical Reference}
+\label{app:math}
+
+\section{Lindblad vs.\ GKSL Notation}
+\label{app:notation}
+
+Different communities use different conventions for \cref{eq:lindblad}.
+LiQuID uses the following (natural units $\hbar = 1$):
+
+\begin{align}
+  \frac{d\densmat}{dt}
+    &= -i[H, \densmat]
+     + \sum_k \left(L_k\densmat L_k^\dagger
+       - \tfrac{1}{2}L_k^\dagger L_k\densmat
+       - \tfrac{1}{2}\densmat L_k^\dagger L_k\right) \notag\\
+    &\equiv -i[H, \densmat]
+     + \sum_k \mathcal{D}[L_k]\densmat
+  \label{eq:lindblad-dissipator}
+\end{align}
+
+where $\mathcal{D}[L]\densmat \equiv L\densmat L^\dagger - \tfrac{1}{2}\{L^\dagger L, \densmat\}$.
+Some references write $\gamma_k L_k$ with unit-norm $L_k$; others absorb
+$\sqrt{\gamma_k}$ into $L_k$. LiQuID uses the latter convention:
+$L_k = \sqrt{\gamma_k}\,\tilde{L}_k$ where $\tilde{L}_k$ is dimensionless.
+
+\section{Standard Error of the Mean}
+\label{app:sem}
+
+For $M$ independent MCWF samples $x_1, \ldots, x_M$ of an observable,
+LiQuID computes:
+
+\begin{align}
+  \hat{\mu}   &= \frac{1}{M}\sum_{m=1}^M x_m \\
+  \hat{s}^2   &= \frac{1}{M-1}\sum_{m=1}^M (x_m - \hat{\mu})^2 \\
+  \widehat{\mathrm{SEM}} &= \frac{\hat{s}}{\sqrt{M}} \\
+  \varepsilon_{\mathrm{rel}} &= \frac{\widehat{\mathrm{SEM}}}{|\hat{\mu}|}
+\end{align}
+
+The stopping criterion $\varepsilon_{\mathrm{rel}} < \varepsilon_{\mathrm{target}}$
+is applied to the worst-case observable across all channels.
+The variance $\hat{s}^2$ is computed via Welford's online algorithm
+(implemented in \code{RunningStatistics}) to avoid catastrophic cancellation.
+
+\chapter{API Quick Reference}
+\label{app:api-ref}
+
+\section{Builder Method Summary}
+\label{app:builder-summary}
+
+\begin{longtable}{L{42mm}L{28mm}L{38mm}}
+\caption{Complete \code{SimulationBuilder} method reference.}
+\label{tab:builder-ref}\\
+\toprule
+\textbf{Method} & \textbf{Type} & \textbf{Sets field} \\
+\midrule
+\endfirsthead
+\midrule
+\textbf{Method} & \textbf{Type} & \textbf{Sets field} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\code{.hamiltonian(H)}       & \code{DenseOperator} & \code{H\_} \\
+\code{.collapse\_operator(L)} & \code{DenseOperator} & adds to \code{L\_list\_} \\
+\code{.observe(name, O)}     & \code{string, DenseOperator} & adds to \code{obs\_} \\
+\code{.observe(name, fn)}    & \code{string, ObservableFn} & adds to \code{obs\_} \\
+\code{.dt(h)}                & \code{Real} & \code{cfg.dt\_initial} \\
+\code{.solver(type)}         & \code{SolverType} & \code{solver\_} \\
+\code{.atol(e)}              & \code{Real} & \code{cfg.atol} \\
+\code{.rtol(e)}              & \code{Real} & \code{cfg.rtol} \\
+\code{.seed(s)}              & \code{Seed} & \code{ens\_cfg.global\_seed} \\
+\code{.num\_threads(n)}      & \code{size\_t} & \code{ens\_cfg.num\_threads} \\
+\code{.stop\_at\_sem(e)}     & \code{Real} & \code{sc.target\_rel\_sem} \\
+\code{.min\_trajectories(n)} & \code{size\_t} & \code{sc.min\_trajectories} \\
+\code{.max\_trajectories(n)} & \code{size\_t} & \code{sc.max\_trajectories} \\
+\code{.max\_wall\_time(s)}   & \code{Real} & \code{sc.max\_wall\_seconds} \\
+\code{.diagnostic\_level(l)} & \code{DiagnosticLevel} & \code{ens\_cfg.diag\_level} \\
+\code{.build()}              & $\to$ \code{Simulation} & validates + constructs \\
+\end{longtable}
+
+% -------------------------------------------------------------
+%  BIBLIOGRAPHY
+% -------------------------------------------------------------
+\backmatter
+
+\begin{thebibliography}{99}
+\bibitem{dalibard1992}
+  J.~Dalibard, Y.~Castin, and K.~M\o{}lmer,
+  ``Wave-function approach to dissipative processes in quantum optics,''
+  \emph{Phys.\ Rev.\ Lett.}\ \textbf{68}, 580 (1992).
+
+\bibitem{dum1992}
+  R.~Dum, P.~Zoller, and H.~Ritsch,
+  ``Monte Carlo simulation of the atomic master equation for spontaneous emission,''
+  \emph{Phys.\ Rev.\ A}\ \textbf{45}, 4879 (1992).
+
+\bibitem{molmer1993}
+  K.~M\o{}lmer, Y.~Castin, and J.~Dalibard,
+  ``Monte Carlo wave-function method in quantum optics,''
+  \emph{J.\ Opt.\ Soc.\ Am.\ B}\ \textbf{10}, 524 (1993).
+
+\bibitem{carmichael1993}
+  H.~Carmichael,
+  \emph{An Open Systems Approach to Quantum Optics}.
+  Springer, Berlin, 1993.
+
+\bibitem{gardiner2004}
+  C.~W.~Gardiner and P.~Zoller,
+  \emph{Quantum Noise}, 3rd ed.
+  Springer, Berlin, 2004.
+
+\bibitem{dormand1980}
+  J.~R.~Dormand and P.~J.~Prince,
+  ``A family of embedded Runge-Kutta formulae,''
+  \emph{J.\ Comput.\ Appl.\ Math.}\ \textbf{6}, 19--26 (1980).
+
+\bibitem{hairer1993}
+  E.~Hairer, S.~P.~N\o{}rsett, and G.~Wanner,
+  \emph{Solving Ordinary Differential Equations I}, 2nd ed.
+  Springer, Berlin, 1993.
+
+\bibitem{gustafsson1991}
+  K.~Gustafsson,
+  ``Control theoretic techniques for stepsize selection in explicit Runge-Kutta methods,''
+  \emph{ACM Trans.\ Math.\ Softw.}\ \textbf{17}, 533--554 (1991).
+
+\bibitem{blackman2018}
+  D.~Blackman and S.~Vigna,
+  ``Scrambled linear pseudorandom number generators,''
+  \emph{ACM Trans.\ Math.\ Softw.}\ \textbf{47}, 1--32 (2021).
+  \texttt{arXiv:1805.01407}.
+
+\bibitem{welford1962}
+  B.~P.~Welford,
+  ``Note on a method for calculating corrected sums of squares and products,''
+  \emph{Technometrics}\ \textbf{4}, 419--420 (1962).
+
+\bibitem{lindblad1976}
+  G.~Lindblad,
+  ``On the generators of quantum dynamical semigroups,''
+  \emph{Commun.\ Math.\ Phys.}\ \textbf{48}, 119--130 (1976).
+
+\bibitem{gorini1976}
+  V.~Gorini, A.~Kossakowski, and E.~C.~G.~Sudarshan,
+  ``Completely positive dynamical semigroups of $N$-level systems,''
+  \emph{J.\ Math.\ Phys.}\ \textbf{17}, 821--825 (1976).
+\end{thebibliography}
+
+% -------------------------------------------------------------
+%  INDEX
+% -------------------------------------------------------------
+% Index omitted in this build (requires makeindex run)
+% Run: makeindex liquid_manual.idx && pdflatex liquid_manual.tex
+
+\end{document}
