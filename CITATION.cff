@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+
+message: "If you use LiQuID (Lindblad Quantum Integrated Dynamics), please cite the software and the associated dataset."
+
+title: "LiQuID — Lindblad Quantum Integrated Dynamics"
+
+version: "0.7.0"
+
+date-released: "2026-06-15"
+
+authors:
+  - family-names: Mohammed
+    given-names: Mohammed Maher Abdelrahim
+    affiliation: "Researcher"
+
+preferred-citation:
+  type: software
+  title: "LiQuID — Lindblad Quantum Integrated Dynamics"
+  authors:
+    - family-names: Mohammed
+      given-names: Mohammed Maher Abdelrahim
+  version: "0.7.0"
+  date-released: "2026-06-15"
+
+references:
+  - type: dataset
+    title: "LiQuID — Lindblad Quantum Integrated Dynamics (Benchmark Dataset)"
+    authors:
+      - family-names: Mohammed
+        given-names: Mohammed Maher Abdelrahim
+    year: 2026
+    version: "1"
+    doi: 10.17632/zm9s954bnn.1
+    url: "https://doi.org/10.17632/zm9s954bnn.1"
+    repository: "Mendeley Data"
+
+license: "MIT"
