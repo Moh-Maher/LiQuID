@@ -1,5 +1,7 @@
 # LiQuID — Lindblad Quantum Integrated Dynamics
 
+[![DOI](https://img.shields.io/badge/DOI-10.17632%2Fzm9s954bnn.1-blue)](https://doi.org/10.17632/zm9s954bnn.1)
+
 A high-performance C++17 framework for simulating open quantum systems using the
 Monte Carlo Wave Function (MCWF) method, with adaptive trajectory management,
 sparse operator support, and an optional machine-learning allocation policy.
