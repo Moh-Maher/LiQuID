@@ -32,7 +32,7 @@ sparse operator support, and an optional machine-learning allocation policy.
 9. [Extending LiQuID](#extending-liquid)
 10. [Test suite](#test-suite)
 11. [Known limitations](#known-limitations)
-
+12. [Citation](#citation)
 ---
 
 ## What LiQuID is
@@ -1015,3 +1015,11 @@ a systematic error of O(dt) in jump times. For most observables measured at
 `t_final` this is negligible. For jump-time statistics at high accuracy,
 replace `JumpDetectorType::Threshold` with `LinearInterpBisect` (stubbed,
 Phase 3 roadmap item).
+
+## Citation
+
+If you use LiQuID in your research, please cite both the software and the dataset.
+
+### Dataset
+
+Mohammed, Mohammed Maher Abdelrahim (2026), "LiQuID — Lindblad Quantum Integrated Dynamics", Mendeley Data, V1, doi:10.17632/zm9s954bnn.1
