@@ -85,7 +85,7 @@ static inline T median3(T a[3]) { return a[1]; }
 int main()
 {
     constexpr double      T     = 1.0;
-    constexpr std::size_t N_REF = 50000;
+    constexpr std::size_t N_REF = 50'000;
 
     StateVector psi0(2);
     psi0[0] = Scalar{1.0, 0.0};   // |↑⟩

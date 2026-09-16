@@ -1,0 +1,11 @@
+observable,label,N_fixed,fixed_role,mean,sem,rel_sem,target_met,waste_factor
+Pe1,"P_e1 (qubit 1 excited pop.)",280,small,0.27013673,1.08479486e-02,0.040157,0,0.0642
+Pe2,"P_e2 (qubit 2 excited pop.)",280,small,0.10402387,3.70231620e-03,0.035591,0,0.0864
+Pee,"P_ee (joint excited pop.)",280,small,0.03638335,1.69963884e-03,0.046715,0,0.0483
+sz1,"<sigma_z^(1)>",280,small,-0.45972655,2.16958972e-02,0.047193,0,0.0471
+sz2,"<sigma_z^(2)>",280,small,-0.79195226,7.40463241e-03,0.009350,1,1.0000
+Pe1,"P_e1 (qubit 1 excited pop.)",5940,large,0.26606610,2.31011556e-03,0.008682,1,1.3624
+Pe2,"P_e2 (qubit 2 excited pop.)",5940,large,0.11216444,8.19608985e-04,0.007307,1,1.8333
+Pee,"P_ee (joint excited pop.)",5940,large,0.03737169,3.73729246e-04,0.010000,1,1.0241
+sz1,"<sigma_z^(1)>",5940,large,-0.46786781,4.62023111e-03,0.009875,1,1.0000
+sz2,"<sigma_z^(2)>",5940,large,-0.77567112,1.63921797e-03,0.002113,1,21.2143

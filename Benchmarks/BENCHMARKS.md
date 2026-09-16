@@ -2,10 +2,13 @@
 ## LiQuID — *Observable-Dependent Convergence in Monte Carlo Wave-Function Simulations*
 ### Computer Physics Communications submission
 
-Three quantitative benchmarks validate the adaptive SEM-based stopping criterion
-implemented in LiQuID.  Each benchmark is self-contained: one C++ executable
-produces the CSV data, one Python script reads those CSVs and writes the figures
-that appear in the paper.
+Three quantitative benchmarks (B1–B3) validate the adaptive SEM-based stopping
+criterion implemented in LiQuID and back every table/figure through Table 6.
+Each is self-contained: one C++ executable produces the CSV data, one Python
+script reads those CSVs and writes the figures that appear in the paper.
+One further pipeline is included in the repository but sits outside that
+core set: `run_qutip_liquid_comparison.sh`, which reproduces Table 8 only
+(§8.4.1, no accompanying paper plot). See the note under **File map** below.
 
 ---
 ## Repository layout
@@ -36,6 +39,7 @@ LiQuID/
 │   ├── bench1_adaptive_stopping.cpp    # → Table 4, Figure 1
 │   ├── bench2_variance_dependence.cpp  # → Table 1, Table 5, Figures 2–3
 │   ├── bench3_fixed_vs_adaptive.cpp    # → Tables 2 & 6, Figures 4–7
+│   ├── run_qutip_liquid_comparison.sh  # → Table 8 only, no paper plot (§8.4.1)
 │   ├── bench1_adaptive_stopping_plot.py
 │   ├── bench2_variance_dependence_plot.py
 │   ├── bench3_fixed_vs_adaptive_plot.py
@@ -54,6 +58,7 @@ LiQuID/
 | **B1 — Adaptive stopping** | `bench1b_adaptive_stopping.cpp` | `bench1b_adaptive_stopping_plot.py` | `bench_adaptive_stopping.csv` | `bench_adaptive_stopping_fig1.pdf/png` |
 | **B2 — Variance dependence** | `bench2_variance_dependence.cpp` | `bench2_variance_dependence_plot.py` | `bench2_variance.csv`, `bench2_main.csv` | `bench2_fig1_Nadaptive_bar.pdf`, `bench2_fig4_efficiency.pdf` |
 | **B3 — Fixed-N vs adaptive** | `bench3_fixed_vs_adaptive.cpp` | `bench3_fixed_vs_adaptive_plot.py` | `bench3_adaptive.csv`, `bench3_fixed.csv`, `bench3_comparison.csv` | `fig1_bar_N_adaptive.pdf`, `fig2_waste_factor.pdf`, `fig3_relsem_heatmap.pdf`, `fig4_runtime.pdf` |
+| **B4 — QuTiP vs LiQuID (Table 8)** | *(orchestrated — no single C++ source; see below)* | `run_qutip_liquid_comparison.sh` | `results/qutip_results.jsonl`, `results/liquid_results.jsonl` | `results/qutip_vs_liquid_comparison.pdf` *(not used in the paper — see note below)* |
 
 
 > **Note on `bench2_convergence.csv`.**  Step 3 of `bench2_variance_dependence.cpp`
@@ -61,6 +66,14 @@ LiQuID/
 > `/* … */` comments.  The CSV is therefore **not produced** by default and
 > `bench2_fig2_convergence.pdf` cannot be generated until that block is
 > uncommented.
+
+> **Note on `run_qutip_liquid_comparison.sh`.** This pipeline produces **only
+> Table 8** (§8.4.1, the QuTiP `target_tol` vs. LiQuID head-to-head). It also
+> renders a comparison figure (`qutip_vs_liquid_comparison.pdf`) as a
+> byproduct of `make_qutip_comparison.py`, but that figure is **not**
+> included anywhere in `the_paper.pdf` — Table 8 is reported as text/table
+> only, with no accompanying plot. Treat the figure output as a local
+> diagnostic, not a paper artifact.
 
 ---
 
@@ -177,6 +190,34 @@ plotting scripts (figures → `figs/`). Approximate total runtime: 55 min
 
 ```bash
 ./bench3_fixed_vs_adaptive
+```
+
+---
+
+### Table 8 — QuTiP `target_tol` vs. LiQuID N_min-guarded RelSEM (§8.4.1)
+
+**Driver:** `run_qutip_liquid_comparison.sh`
+**Underlying scripts:** `qutip_benchmark.py` (pure-decay + driven sweep), `qutip_pg_check.py`
+(supplementary P_g non-convergence check at `ntraj_max=5000`), `liquid_csv_to_jsonl.py`
+(converts LiQuID's own `bench_adaptive_stopping.csv`/`bench2_main.csv` into the comparison
+schema), `make_qutip_comparison.py` (assembles the table data and plots the comparison figure)
+**JSONL data:** `results/qutip_results.jsonl`, `results/liquid_results.jsonl`
+
+```bash
+./run_qutip_liquid_comparison.sh
+```
+
+This produces **only Table 8** — the full ε ∈ {10%, 5%, 2%, 1%} grid on both the
+pure-decay and driven-qubit systems (16 cases, plus 2 supplementary P_g checks at a
+smaller `ntraj_max`), reporting N_QuTiP, wall time, relative error, N_adapt (LiQuID),
+and outcome for each case. **No table-8 plot appears in the paper** — the script does
+generate `results/qutip_vs_liquid_comparison.pdf` as a byproduct, but that figure is
+not referenced or included anywhere in `the_paper.pdf`; see the note above.
+
+To reuse real LiQuID output instead of the manuscript-value placeholder:
+
+```bash
+./run_qutip_liquid_comparison.sh --liquid-dir /path/to/LiQuID/benchmarks/results
 ```
 
 ---

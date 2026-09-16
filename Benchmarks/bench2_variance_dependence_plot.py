@@ -463,7 +463,7 @@ def plot4_efficiency(df_main: pd.DataFrame,
     ax.set_xlabel(r"$N_{\rm optimal} = \lceil\,\sigma^2\,/\,(\varepsilon|\mu|)^2\rceil$")
     ax.set_ylabel(r"$N_{\rm adaptive}$  (median of 3 replicas)")
     ax.set_title(
-        r"Adaptive stopping vs.\ theoretical optimum" "\n"
+        r"Adaptive stopping vs. asymptotic optimum" "\n"
         r"Shaded band: $\pm 20\%$ of perfect efficiency",
         fontsize=11, pad=8,
     )
