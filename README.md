@@ -1,6 +1,8 @@
 # LiQuID — Lindblad Quantum Integrated Dynamics
 
-[![DOI](https://img.shields.io/badge/DOI-10.17632%2Fzm9s954bnn.1-blue)](https://doi.org/10.17632/zm9s954bnn.1)
+[![Software DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20664622-blue)](https://doi.org/10.5281/zenodo.20664622)
+[![Paper](https://img.shields.io/badge/Paper-Computer%20Physics%20Communications%202026-blue)](https://doi.org/10.1016/j.cpc.2026.110477)
+[![Dataset](https://img.shields.io/badge/Dataset-Mendeley%20Data%20V2-blue)](https://doi.org/10.17632/zm9s954bnn.2)
 
 A high-performance C++17 framework for simulating open quantum systems using the
 Monte Carlo Wave Function (MCWF) method, with adaptive trajectory management,
@@ -1020,8 +1022,25 @@ Phase 3 roadmap item).
 
 ## Citation
 
-If you use LiQuID in your research, please cite both the software and the dataset.
+If you use LiQuID in your research, please cite the software, dataset, and the associated scientific publication.
+
+### Software
+
+Mohammed, Mohammed Maher Abdelrahim (2026),  
+**LiQuID — Lindblad Quantum Integrated Dynamics**,  
+Zenodo, 2026.  
+DOI: https://doi.org/10.5281/zenodo.20664622
 
 ### Dataset
 
-Mohammed, Mohammed Maher Abdelrahim (2026), "LiQuID — Lindblad Quantum Integrated Dynamics", Mendeley Data, V1, doi:10.17632/zm9s954bnn.1
+Mohammed, Mohammed Maher Abdelrahim (2026),  
+**LiQuID — Lindblad Quantum Integrated Dynamics**,  
+Mendeley Data, V2, 2026.  
+DOI: https://doi.org/10.17632/zm9s954bnn.2
+
+### Scientific publication
+
+Mohammed, Mohammed Maher Abdelrahim (2026),  
+**“Observable-Dependent Convergence in Monte Carlo Wave-Function Simulations and an Adaptive Remedy,”**  
+*Computer Physics Communications*.  
+DOI: https://doi.org/10.1016/j.cpc.2026.110477
